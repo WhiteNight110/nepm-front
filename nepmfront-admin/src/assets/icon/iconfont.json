@@ -1,0 +1,23 @@
+{
+  "id": "4585475",
+  "name": "nepm-admin",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "2127118",
+      "name": "账户",
+      "font_class": "account",
+      "unicode": "e60a",
+      "unicode_decimal": 58890
+    },
+    {
+      "icon_id": "12779504",
+      "name": "password",
+      "font_class": "password",
+      "unicode": "e65d",
+      "unicode_decimal": 58973
+    }
+  ]
+}

@@ -1,32 +1,48 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import Login from '../views/Login/Login.vue'
-import Index from '../views/Index/Index.vue'
 import HelloWorld from '../components/HelloWorld.vue'
 const routes = [
   {
     path: '/',
-    name: 'home',
-    component: Login
+    name: 'Home',
+    component: () => import('../views/HomeView.vue')
   },{
     path: '/login',
     name: 'Login',
-    component: Login
+    component: () => import('../views/Login/Login.vue')
   },{
-    path: '/index',
-    name: 'Index',
-    component: Index,
-    children: [
-      {
-        path: '/index',
-        component: HelloWorld
-      }
-    ]
+    path: '/admin',
+    name: 'Admin',
+    meta: {
+      authRequired: true
+    },
+    component: () => import('../views/Admin/Admin.vue'),
+    // children: [
+    //   {
+    //     name: 'index',
+    //     path: '/index',
+    //     component: HelloWorld
+    //   }
+    // ]
   }
 ]
 
 const router = createRouter({
   history: createWebHashHistory(),
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('token')
+  console.log('token', token)
+  console.log('to', to)
+  if (to.name != 'Home' && !token) {
+    console.log('no token')
+    next({ name: 'Home' })
+  }
+  else {
+    console.log('has token')
+    next()
+  }
 })
 
 export default router
