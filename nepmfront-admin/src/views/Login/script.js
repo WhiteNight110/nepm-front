@@ -1,4 +1,5 @@
 import { getCurrentInstance,reactive, ref } from "vue"
+import { login } from "@/api/login";
 
 export default {
     setup() {
@@ -22,18 +23,11 @@ export default {
         const submitForm = () => {
           formDataRef.value.validate(async(valid) => {
             if(!valid) return;
-            let result = await proxy.Request({
-              url : api.login,
-              params : {
-                username : loginForm.username,
-                password : loginForm.password,
-                checkCode : loginForm.checkCode
-              },
-              errorCallback : () => {
-                changeCheckCode();
-              }
-            })
-            console.log(result);
+            login(loginForm).then(res => {
+              console.log(res);
+            }).catch(err => {
+              console.log(err);
+            });
           });
         };
         const rules = {

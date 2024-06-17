@@ -1,9 +1,6 @@
 import axios from "axios";
 import { ElLoading, ElMessage } from 'element-plus';
-
-const contentTypeForm = "application/x-ww-form-urlencoded;charset=UTF-8";
-const contentTypeJson = "application/json";
-const contentTypeFile = "multipart/form-data";
+import router from "@/router";
 
 
 const request = axios.create({
@@ -11,7 +8,6 @@ const request = axios.create({
     timeout: 10000,
 });
 
-let loading = null;
 //请求前拦截
 request.interceptors.request.use(config => {
     const token = localStorage.getItem('token')
@@ -37,8 +33,15 @@ request.interceptors.response.use(response => {
     }else{
         //TODO: 根据不同的responseData.code进行不同的处理
     }
-}, error => {
-    console.log(error);
+}, ({response}) => {
+    const {status , data} = response;
+    if(status === 401){
+        ElMessage({
+            message: data.message,
+            type: 'error',
+        })
+        router.push({name: 'Login'});
+    }
     return Promise.reject("网络异常");
 });
 
