@@ -2,8 +2,24 @@ import request from "@/utils/request";
 
 export function login(data) {
     return request({
-        url: '/login',
+        url: 'admins/getAdminsByCode',
         method: 'post',
-        data
+        data: {
+            adminCode: data.username,
+            password: data.password
+        },
+        withCredentials: false
+    })
+}
+
+export function register(data) {
+    return request({
+        url: 'admins/adminsRegister',
+        method: 'post',
+        data:{
+            adminCode: data.username,
+            password: data.password
+        },
+        withCredentials: false
     })
 }

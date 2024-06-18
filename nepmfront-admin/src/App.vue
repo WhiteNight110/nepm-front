@@ -3,24 +3,27 @@
 </template>
 
 <script setup>
-import axios from "axios";
-import { provide } from "vue";
-import { ElMessage } from "element-plus";
+  import axios from "axios";
+  import { provide } from "vue";
+  import { ElMessage } from "element-plus";
+  import test from "@/views/Test.vue";
 
-//设置共通axios基础URL
-axios.defaults.baseURL = "http://localhost:8080/nepm/";
+  //设置共通axios基础URL
+  // axios.defaults.baseURL = "http://localhost:8080/nepm/";
 
-//封装共通消息提示框
-const myElMessage = (message,type) => {
-  ElMessage({
-    message: message,
-    type: type,
-    showClose: true
-  });
-};
+  //封装共通消息提示框
+  const myElMessage = (message,type) => {
+    ElMessage({
+      message: message,
+      type: type,
+      showClose: true
+    });
+  };
 
-provide("axios", axios);
-provide("myElMessage", myElMessage);
+  // provide("axios", axios);
+  provide("myElMessage", myElMessage);
+
+
 </script>
 
 <style>

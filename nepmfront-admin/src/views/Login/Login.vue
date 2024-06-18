@@ -23,7 +23,7 @@
                     <el-form-item prop="checkCode">
                         <div class="check-code-panel">
                             <el-input v-model="loginForm.checkCode" class="input-panel" placeholder="请输入验证码" size="large"></el-input>
-                            <img class="check-code" :src="checkCodeUrl" @click="getCode">
+                            <!-- <img class="check-code" :src="checkCodeUrl" @click="getCode"> -->
                         </div>
                     </el-form-item>
                     <el-form-item>
@@ -31,6 +31,9 @@
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="submitForm(formDataRef)" :style="{width:'100%'}" >登录</el-button>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="success" @click="register" :style="{width:'100%'}" >注册</el-button>
                     </el-form-item>
                 </el-form>
             </div>
