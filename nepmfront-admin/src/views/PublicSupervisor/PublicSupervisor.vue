@@ -6,6 +6,9 @@ import {
 import { ref } from 'vue'
 import { provinceAndCityData } from 'element-china-area-data';
     const radio = ref(0)
+    const aqiLevel = ref('')
+    const feedbackDate = ref('')
+    const selectedOptions = ref([])
     const categorys = ref([
         {
             "id": 3,
@@ -30,9 +33,39 @@ import { provinceAndCityData } from 'element-china-area-data';
         }
     ])
     const handleChange = () =>{
-        console.log(selectedOptions)
+        //获取列表
+        let list = selectedOptions.value
+        console.log(list)
+        if(list === undefined || list.length == 0){
+            console.log("省市未选择")
+        }else if(list.length == 1){
+            console.log("省市选择了省,代码为",list[0])
+        }else if(list.length == 2){
+            console.log("省市选择了市,省代码为",list[0],"市代码为",list[1])
+        }
     }
-    const selectedOptions = ref([])
+    const aqiLevelOptions = [
+        {
+            value: '1',
+            label: '一级'
+        },
+        {
+            value: '2',
+            label: '二级'
+        },
+        {
+            value: '3',
+            label: '三级'
+        },
+        {
+            value: '4',
+            label: '四级'
+        },
+        {
+            value: '5',
+            label: '五级'
+        }
+    ]
 </script>
 <template>
     <el-card class="page-container">
@@ -52,15 +85,18 @@ import { provinceAndCityData } from 'element-china-area-data';
                 </div>
                 <div class="flex-item">
                     <span>预估等级</span>
-                    <el-select v-model="value" clearable placeholder="Select" style="width: 100px">
-                        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+                    <el-select v-model="aqiLevel" clearable placeholder="Select" style="width: 100px">
+                        <el-option v-for="item in aqiLevelOptions" :key="item.value" :label="item.label" :value="item.value" />
                     </el-select>
                 </div>
                 <div class="flex-item">
                     <span>反馈日期</span>
-                    <el-select v-model="value" clearable placeholder="Select" style="width: 100px">
-                        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
-                    </el-select>
+                    <el-date-picker
+                        v-model="feedbackDate"
+                        type="date"
+                        placeholder="反馈日期"
+                        style="width: 130px"
+                    />
                 </div>
 				<el-button type="danger">清空</el-button>
 				<el-button type="primary">查询</el-button>

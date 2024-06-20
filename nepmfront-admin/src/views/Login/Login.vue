@@ -23,7 +23,7 @@
                     <el-form-item prop="checkCode">
                         <div class="check-code-panel">
                             <el-input v-model="loginForm.checkCode" class="input-panel" placeholder="请输入验证码" size="large"></el-input>
-                            <img class="check-code" :src="checkCodeUrl" @click="changeCheckCode">
+                            <img class="check-code" :src="codeValue" @click="changeCheckCode">
                         </div>
                     </el-form-item>
                     <el-form-item>
@@ -42,67 +42,75 @@
 </template>
 <script setup>
     import { reactive, ref } from "vue"
-    import { login, checkCaptcha } from "@/api/login";
+    import { onMounted } from "vue"
+    import { login, getCaptcha, checkCaptcha } from "@/api/login";
     import router from "@/router";
     import { ElMessage } from "element-plus";
-    import { useGlobalStore } from "@/stores/globalStore";
     import { useTokenStore } from "@/stores/token";
 
-    const globalStore = useGlobalStore();
     const tokenStore = useTokenStore();
-
+    const codeValue = ref('');
     const loginForm = reactive({
         username: '',
         password: '',
         checkCode: '',
+        codeKey: '',
         checked: false
     });
     const formDataRef = ref(null);
 
+    onMounted(() => {
+        getCaptcha().then(response => {
+            console.log("response:",response);
+            const { data } = response;
+            loginForm.codeKey = data.codeKey;
+            codeValue.value = data.codeValue;
+        })
+    })
+
     const submitForm = () => {
         console.log("loginForm:",loginForm);
         formDataRef.value.validate(async(valid) => {
-        if(!valid) return;
-        //验证验证码
-        let isChecked = false;
-        checkCaptcha(loginForm).then(response => {
-            console.log("response:",response);
-            const { data,status } = response;
-            if(status === 200) {
-            isChecked = data;
-            }else{
-            ElMessage({message: data.data,type: 'error',})
-            return;
-            }
-        })
-
-        //验证码通过则发送登录请求
-        if(!isChecked){
-            login(loginForm).then(response => {
-            console.log("response:",response);
-            const { data } = response;
-            if(data.code === 200) {
-                //登陆成功则记录token并跳转到主页
-                tokenStore.setToken(data.data);
-                router.push('/admin');
-            }else{
-                //登陆失败则提示错误信息
-                ElMessage({message: data.data,type: 'error',})
-            }
-            }).catch(error => {
-            console.log(error);
-            });
-        }else{
-            ElMessage({message: '验证码错误',type: 'error',})
-            // changeCheckCode();
-        }
+            if(!valid) return;
+            //验证验证码
+            var isChecked = false;
+            checkCaptcha(loginForm).then(response => {
+                console.log("response:",response);
+                const { data,status } = response;
+                if(status === 200) {
+                    if(data==true){
+                        login(loginForm).then(response => {
+                        console.log("response:",response);
+                        const { data } = response;
+                        if(data.code === 200) {
+                            //登陆成功则记录token并跳转到主页
+                            tokenStore.setToken(data.data);
+                            router.push('/admin');
+                        }else{
+                            //登陆失败则提示错误信息
+                            ElMessage({message: data.data,type: 'error',})
+                        }
+                        }).catch(error => {
+                        console.log(error);
+                        });
+                    }else{
+                        ElMessage({message: '验证码错误',type: 'error',})
+                    }
+                }else{
+                    ElMessage({message: data.data,type: 'error',})
+                    return;
+                }
+            })
         });
     };
 
-    const checkCodeUrl = ref(globalStore.baseUrl + "admins/getCaptcha")
-
     const changeCheckCode = (event) => {
-        checkCodeUrl.value = globalStore.baseUrl + "admins/getCaptcha?t="+new Date().getTime();
+        getCaptcha().then(response => {
+            console.log("response:",response);
+            const { data } = response;
+            loginForm.codeKey = data.codeKey;
+            codeValue.value = data.codeValue;
+        })
     }
 
     const register = () => {

@@ -1,5 +1,5 @@
 import { reactive, ref } from "vue"
-import { login, checkCaptcha } from "@/api/login";
+import { login, checkCaptcha, getCaptcha } from "@/api/login";
 import router from "@/router";
 import { ElMessage } from "element-plus";
 import { useGlobalStore } from "@/stores/globalStore";
@@ -7,6 +7,7 @@ import { useGlobalStore } from "@/stores/globalStore";
 
 export default {
     setup() {
+        
         const globalStore = useGlobalStore();
 
         const loginForm = reactive({
@@ -35,7 +36,7 @@ export default {
             })
 
             //验证码通过则发送登录请求
-            if(!isChecked){
+            if(isChecked){
               login(loginForm).then(response => {
                 console.log("response:",response);
                 const { data } = response;

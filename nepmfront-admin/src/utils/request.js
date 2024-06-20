@@ -3,8 +3,9 @@ import { ElLoading, ElMessage } from 'element-plus';
 import router from "@/router";
 import { useTokenStore } from "@/stores/token";
 
+
 const request = axios.create({
-    baseURL: 'http://10.1.232.186:8080/nepm/',
+    baseURL: 'http://118.202.10.193:8080/nepm/',
     timeout: 10000,
 });
 

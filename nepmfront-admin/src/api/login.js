@@ -24,12 +24,20 @@ export function register(data) {
     })
 }
 
+export function getCaptcha(data) {
+    return request({
+        url: 'admins/getCaptcha?t='+new Date().getTime(),
+        method: 'get',
+    })
+}
+
 export function checkCaptcha(data) {
     return request({
         url: 'admins/checkCaptcha',
-        method: 'get',
+        method: 'post',
         params: {
-            captcha: data.checkCode
+            captcha: data.checkCode,
+            codeKey: 'user:login:validatecode:'+data.codeKey
         },
     })
 }
