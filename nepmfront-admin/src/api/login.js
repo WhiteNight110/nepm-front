@@ -27,9 +27,9 @@ export function register(data) {
 export function checkCaptcha(data) {
     return request({
         url: 'admins/checkCaptcha',
-        method: 'post',
-        data: {
+        method: 'get',
+        params: {
             captcha: data.checkCode
-        }
+        },
     })
 }

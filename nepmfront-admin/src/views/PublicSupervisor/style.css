@@ -9,3 +9,13 @@
     background-size: cover;
     background-position: center;
 }
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    background-color: #f0f0f0;
+    .cascader #span{
+        text-align: center;
+    }
+  }

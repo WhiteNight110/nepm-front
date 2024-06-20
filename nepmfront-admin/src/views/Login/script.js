@@ -2,10 +2,13 @@ import { reactive, ref } from "vue"
 import { login, checkCaptcha } from "@/api/login";
 import router from "@/router";
 import { ElMessage } from "element-plus";
+import { useGlobalStore } from "@/stores/globalStore";
 
 
 export default {
     setup() {
+        const globalStore = useGlobalStore();
+
         const loginForm = reactive({
             username: '',
             password: '',
@@ -13,11 +16,6 @@ export default {
             checked: false
         });
         const formDataRef = ref(null);
-
-        // const changeCheckCode = () => {
-        //   checkCodeUrl.value = "checkCode?" + new Date().getTime()
-        // }
-
 
         const submitForm = () => {
           console.log("loginForm:",loginForm);
@@ -37,7 +35,7 @@ export default {
             })
 
             //验证码通过则发送登录请求
-            if(isChecked){
+            if(!isChecked){
               login(loginForm).then(response => {
                 console.log("response:",response);
                 const { data } = response;
@@ -54,15 +52,15 @@ export default {
               });
             }else{
               ElMessage({message: '验证码错误',type: 'error',})
-              changeCheckCode();
+              // changeCheckCode();
             }
           });
         };
 
-        const checkCodeUrl = ref("http://10.1.232.186:8080/nepm/admins/getCaptcha")
+        const checkCodeUrl = ref(globalStore.baseUrl + "admins/getCaptcha")
 
         const changeCheckCode = (event) => {
-          checkCodeUrl.value = "http://10.1.232.186:8080/nepm/admins/getCaptcha?t="+new Date().getTime();
+          checkCodeUrl.value = globalStore.baseUrl + "admins/getCaptcha?t="+new Date().getTime();
         }
 
         const register = () => {

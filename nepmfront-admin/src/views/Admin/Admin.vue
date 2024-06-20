@@ -1,16 +1,6 @@
 <script setup>
-import {
-    Management,
-    Promotion,
-    UserFilled,
-    User,
-    Crop,
-    EditPen,
-    SwitchButton,
-    CaretBottom
-} from '@element-plus/icons-vue'
 import avatar from '@/assets/logo.png'
-import { ArrowRight } from '@element-plus/icons-vue'
+import { ArrowRight, Grid, List, UserFilled } from '@element-plus/icons-vue'
 </script>
 
 <template>
@@ -22,59 +12,41 @@ import { ArrowRight } from '@element-plus/icons-vue'
                 <el-sub-menu index="1">
                     <template #title>
                         <el-icon>
-                            <UserFilled />
+                            <UserFilled/>
                         </el-icon>
                         <span>公众监督数据管理</span>
                     </template>
                     <el-menu-item index="/data/publicSupervisor">
-                        <el-icon>
-                          <UserFilled />
-                        </el-icon>
                         <span>公众监督数据列表</span>
                     </el-menu-item>
                     <el-menu-item index="/data/requiredAQI">
-                        <el-icon>
-                          <UserFilled />
-                        </el-icon>
                         <span>确认AQI数据列表</span>
                     </el-menu-item>
                 </el-sub-menu>
                 <el-sub-menu index="2">
                     <template #title>
                         <el-icon>
-                            <UserFilled />
+                            <List />
                         </el-icon>
                         <span>统计数据管理</span>
                     </template>
                     <el-menu-item index="/count/provincialGrouping">
-                        <el-icon>
-                          <UserFilled />
-                        </el-icon>
                         <span>省分组检查统计</span>
                     </el-menu-item>
                     <el-menu-item index="/count/aqiExponential">
-                        <el-icon>
-                          <UserFilled />
-                        </el-icon>
                         <span>AQI指数分布统计</span>
                     </el-menu-item>
                     <el-menu-item index="/count/aqiTrend">
-                        <el-icon>
-                          <UserFilled />
-                        </el-icon>
                         <span>AQI趋势分布统计</span>
                     </el-menu-item>
                     <el-menu-item index="/count/otherData">
-                        <el-icon>
-                          <UserFilled />
-                        </el-icon>
                         <span>其他数据统计</span>
                     </el-menu-item>
                 </el-sub-menu>
                 <el-menu-item index="3">
                     <template #title>
                         <el-icon>
-                            <UserFilled />
+                            <Grid />
                         </el-icon>
                         <span>网格数据管理</span>
                     </template>
@@ -123,69 +95,4 @@ import { ArrowRight } from '@element-plus/icons-vue'
     </el-container>
 </template>
 
-<style scoped>
-.layout-container {
-    height: 100vh;
-}
-
-.el-aside {
-    background-color: #232323;
-}
-
-.el-aside__logo {
-    height: 120px;
-    background: url('@/assets/logo.png') no-repeat center / 120px auto;
-}
-
-.el-aside .el-menu {
-    border-right: none;
-}
-
-.el-header {
-    background-color: #fff;
-    display: flex;
-    align-items: center;
-    padding-right: 20px;
-    justify-content: space-between;
-}
-
-.el-header .index {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  flex-grow: 1;
-  margin-top: 10px;
-}
-
-.user-info {
-    display: flex;
-    align-items: center;
-}
-
-.user-text {
-    margin-right: 30px;
-}
-
-.el-header .el-dropdown__box {
-    display: flex;
-    align-items: center;
-}
-
-.el-header .el-dropdown__box .el-icon {
-    color: #999;
-    margin-left: 10px;
-}
-
-.el-header .el-dropdown__box:active,
-.el-header .el-dropdown__box:focus {
-    outline: none;
-}
-
-.el-footer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    color: #666;
-}
-</style>
+<style scoped src="./style.css"></style>

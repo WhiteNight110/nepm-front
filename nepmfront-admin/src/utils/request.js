@@ -1,6 +1,7 @@
 import axios from "axios";
 import { ElLoading, ElMessage } from 'element-plus';
 import router from "@/router";
+import { useTokenStore } from "@/stores/token";
 
 const request = axios.create({
     baseURL: 'http://10.1.232.186:8080/nepm/',
@@ -11,9 +12,9 @@ const request = axios.create({
 //请求前拦截
 request.interceptors.request.use(config => {
     console.log('请求前拦截，config',config);
-    const token = localStorage.getItem('token')
-    if (token) {
-        config.headers.Authorization = token
+    let tokenStore = useTokenStore()
+    if (tokenStore.token) {
+        config.headers.Authorization = tokenStore.token
     }else{
         console.log("url=",config.url)
         if(config.url !== 'admins/getAdminsByCode' && config.url !== 'admins/adminsRegister'
@@ -53,7 +54,7 @@ request.interceptors.response.use(response => {
         type: 'error',
     })
     router.push({name: 'Login'});
-    return Promise.reject("网络异常");
+    return Promise.reject(error);
 });
 
 

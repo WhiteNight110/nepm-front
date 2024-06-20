@@ -4,59 +4,64 @@ import {
     Delete
 } from '@element-plus/icons-vue'
 import { ref } from 'vue'
-const radio = ref(0)
-const categorys = ref([
-    {
-        "id": 3,
-        "categoryName": "美食",
-        "categoryAlias": "my",
-        "createTime": "2023-09-02 12:06:59",
-        "updateTime": "2023-09-02 12:06:59"
-    },
-    {
-        "id": 4,
-        "categoryName": "娱乐",
-        "categoryAlias": "yl",
-        "createTime": "2023-09-02 12:08:16",
-        "updateTime": "2023-09-02 12:08:16"
-    },
-    {
-        "id": 5,
-        "categoryName": "军事",
-        "categoryAlias": "js",
-        "createTime": "2023-09-02 12:08:33",
-        "updateTime": "2023-09-02 12:08:33"
+import { provinceAndCityData } from 'element-china-area-data';
+    const radio = ref(0)
+    const categorys = ref([
+        {
+            "id": 3,
+            "categoryName": "美食",
+            "categoryAlias": "my",
+            "createTime": "2023-09-02 12:06:59",
+            "updateTime": "2023-09-02 12:06:59"
+        },
+        {
+            "id": 4,
+            "categoryName": "娱乐",
+            "categoryAlias": "yl",
+            "createTime": "2023-09-02 12:08:16",
+            "updateTime": "2023-09-02 12:08:16"
+        },
+        {
+            "id": 5,
+            "categoryName": "军事",
+            "categoryAlias": "js",
+            "createTime": "2023-09-02 12:08:33",
+            "updateTime": "2023-09-02 12:08:33"
+        }
+    ])
+    const handleChange = () =>{
+        console.log(selectedOptions)
     }
-])
+    const selectedOptions = ref([])
 </script>
 <template>
     <el-card class="page-container">
         <template #header>
             <div class="header">
-				<div class="province-region">
-					<span>省区域</span>
-					<el-select v-model="value" clearable placeholder="Select" style="width: 100px">
-						<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
-					</el-select>
-				</div>
-				<div>
-					<span>市区域</span>
-					<el-select v-model="value" clearable placeholder="Select" style="width: 100px">
-						<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
-					</el-select>
-				</div>
-				<div>
-					<span>预估等级</span>
-					<el-select v-model="value" clearable placeholder="Select" style="width: 100px">
-						<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
-					</el-select>
-				</div>
-				<div>
-					<span>反馈日期</span>
-					<el-select v-model="value" clearable placeholder="Select" style="width: 100px">
-						<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
-					</el-select>
-				</div>
+                <div class="cascader">
+                    <span>省市</span>
+                    <el-cascader
+                        size="default"
+                        placeholder="全部"
+                        :options="provinceAndCityData"
+                        clearable="true"
+                        v-model="selectedOptions"
+                        :props="{ expandTrigger: 'hover', checkStrictly: true }"
+                        @change="handleChange">
+                    </el-cascader>
+                </div>
+                <div class="flex-item">
+                    <span>预估等级</span>
+                    <el-select v-model="value" clearable placeholder="Select" style="width: 100px">
+                        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+                    </el-select>
+                </div>
+                <div class="flex-item">
+                    <span>反馈日期</span>
+                    <el-select v-model="value" clearable placeholder="Select" style="width: 100px">
+                        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+                    </el-select>
+                </div>
 				<el-button type="danger">清空</el-button>
 				<el-button type="primary">查询</el-button>
 				<el-radio-group v-model="radio">
