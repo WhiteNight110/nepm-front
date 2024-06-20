@@ -23,3 +23,13 @@ export function register(data) {
         withCredentials: false
     })
 }
+
+export function checkCaptcha(data) {
+    return request({
+        url: 'admins/checkCaptcha',
+        method: 'post',
+        data: {
+            captcha: data.checkCode
+        }
+    })
+}

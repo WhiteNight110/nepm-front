@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
+import { createPinia } from 'pinia';
 
 
 //导入element-plus框架
@@ -17,8 +18,10 @@ import request from "@/utils/request";
 window.__VUE_PROD_DEVTOOLS__ = false;
 window.__VUE_PROD_HYDRATION_MISMATCH_DETAILS__ = false;
 
-// const app = createApp(App);
-// app.use(router).use(ElementPlus)
-// app.config.globalProperties.Request = request;
-// app.mount('#app')
-createApp(App).use(router).use(ElementPlus).mount('#app')
+const app = createApp(App);
+const pinia = createPinia();
+
+app.use(router).use(ElementPlus).use(pinia);
+app.config.globalProperties.Request = request;
+app.mount('#app')
+// createApp(App).use(router).use(ElementPlus).mount('#app')

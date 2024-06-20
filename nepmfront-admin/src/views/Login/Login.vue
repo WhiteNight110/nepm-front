@@ -23,7 +23,7 @@
                     <el-form-item prop="checkCode">
                         <div class="check-code-panel">
                             <el-input v-model="loginForm.checkCode" class="input-panel" placeholder="请输入验证码" size="large"></el-input>
-                            <!-- <img class="check-code" :src="checkCodeUrl" @click="getCode"> -->
+                            <img class="check-code" :src="checkCodeUrl" @click="changeCheckCode">
                         </div>
                     </el-form-item>
                     <el-form-item>

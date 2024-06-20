@@ -1,5 +1,5 @@
 import { reactive, ref } from "vue"
-import { login } from "@/api/login";
+import { login, checkCaptcha } from "@/api/login";
 import router from "@/router";
 import { ElMessage } from "element-plus";
 
@@ -17,27 +17,53 @@ export default {
         // const changeCheckCode = () => {
         //   checkCodeUrl.value = "checkCode?" + new Date().getTime()
         // }
+
+
         const submitForm = () => {
           console.log("loginForm:",loginForm);
           formDataRef.value.validate(async(valid) => {
             if(!valid) return;
-            //验证通过则发送登录请求
-            login(loginForm).then(response => {
+            //验证验证码
+            let isChecked = false;
+            checkCaptcha(loginForm).then(response => {
               console.log("response:",response);
-              const { data } = response;
-              if(data.code === 200) {
-                //登陆成功则记录token并跳转到主页
-                localStorage.setItem('token',data.data);
-                router.push('/admin');
+              const { data,status } = response;
+              if(status === 200) {
+                isChecked = data;
               }else{
-                //登陆失败则提示错误信息
                 ElMessage({message: data.data,type: 'error',})
+                return;
               }
-            }).catch(error => {
-              console.log(error);
-            });
+            })
+
+            //验证码通过则发送登录请求
+            if(isChecked){
+              login(loginForm).then(response => {
+                console.log("response:",response);
+                const { data } = response;
+                if(data.code === 200) {
+                  //登陆成功则记录token并跳转到主页
+                  localStorage.setItem('token',data.data);
+                  router.push('/admin');
+                }else{
+                  //登陆失败则提示错误信息
+                  ElMessage({message: data.data,type: 'error',})
+                }
+              }).catch(error => {
+                console.log(error);
+              });
+            }else{
+              ElMessage({message: '验证码错误',type: 'error',})
+              changeCheckCode();
+            }
           });
         };
+
+        const checkCodeUrl = ref("http://10.1.232.186:8080/nepm/admins/getCaptcha")
+
+        const changeCheckCode = (event) => {
+          checkCodeUrl.value = "http://10.1.232.186:8080/nepm/admins/getCaptcha?t="+new Date().getTime();
+        }
 
         const register = () => {
             router.push('/register');
@@ -56,7 +82,8 @@ export default {
         };  
     
         return {
-          // changeCheckCode,
+          checkCodeUrl,
+          changeCheckCode,
           submitForm,
           rules,
           loginForm,

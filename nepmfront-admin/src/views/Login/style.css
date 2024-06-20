@@ -38,6 +38,8 @@
         margin-right: 5px;
     }
     .check-code{
+        flex: 0.7;
         cursor: pointer;
+        height: 38px;
     }
 }

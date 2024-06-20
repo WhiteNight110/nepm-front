@@ -2,7 +2,6 @@ import axios from "axios";
 import { ElLoading, ElMessage } from 'element-plus';
 import router from "@/router";
 
-
 const request = axios.create({
     baseURL: 'http://10.1.232.186:8080/nepm/',
     timeout: 10000,
@@ -17,7 +16,8 @@ request.interceptors.request.use(config => {
         config.headers.Authorization = token
     }else{
         console.log("url=",config.url)
-        if(config.url !== 'admins/getAdminsByCode' && config.url !== 'admins/adminsRegister'){
+        if(config.url !== 'admins/getAdminsByCode' && config.url !== 'admins/adminsRegister'
+             && config.url !== 'admins/getCaptcha' && config.url !== 'admins/checkCaptcha'){
             console.log("用户认证失败，请重新登录")
             ElMessage({
                 message: '用户认证失败，请重新登录',
