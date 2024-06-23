@@ -5,7 +5,7 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: () => import('../views/Login/Login.vue')
+    component: () => import('../views/Admin/Admin.vue')
   },
   {
     path: '/login',
@@ -18,7 +18,7 @@ const routes = [
     component: () => import('../views/Admin/Admin.vue'),
     children : [
       {path: '/data/publicSupervisor', name: 'PublicSupervisor', component: () => import('../views/PublicSupervisor/PublicSupervisor.vue')},
-      {path: '/data/requiredAQI', name: 'RequiredAQI', component: () => import('../views/RequiredAQI/RequiredAQI.vue')},
+      {path: '/data/requiredAQI', name: 'RequiredAQI', component: () => import('../views/RequiredAQI.vue')},
       {path: '/count/provincialGrouping', name: 'ProvincialGrouping', component: () => import('../views/ProvincialGrouping/ProvincialGrouping.vue')},
       {path: '/count/aqiExponential', name: 'AQIExponential', component: () => import('../views/AQIExponential/AQIExponential.vue')},
       {path: '/count/aqiTrend', name: 'AQITrend', component: () => import('../views/AQITrend/AQITrend.vue')},

@@ -16,16 +16,17 @@ import { provinceAndCityData } from 'element-china-area-data';
     const aqiLevel = ref('')
     const feedbackDate = ref('')
     const selectedOptions = ref([])
-    const dialogVisible = ref(true)
+    const dialogVisible = ref(false)
     const selectItem = ref([{id:13,realName:'李四',province:'辽宁省',city:'大连市',estimatedGrade:'优',afDate:'2021-09-02',afTime:'13:00'}])
-    const feedbackList = ref([{id:12,realName:'张三',province:'辽宁省',city:'沈阳市',estimatedGrade:'良',afDate:'2021-09-01',afTime:'12:00'},
-        {id:13,realName:'李四',province:'辽宁省',city:'大连市',estimatedGrade:'优',afDate:'2021-09-02',afTime:'13:00'},
-        {id:14,realName:'王五',province:'辽宁省',city:'鞍山市',estimatedGrade:'轻度污染',afDate:'2021-09-03',afTime:'14:00'},
-        {id:11,realName:'赵六',province:'辽宁省',city:'抚顺市',estimatedGrade:'中度污染',afDate:'2021-09-04',afTime:'15:00'},
-        {id:15,realName:'孙七',province:'辽宁省',city:'本溪市',estimatedGrade:'重度污染',afDate:'2021-09-05',afTime:'16:00'},
-        {id:16,realName:'周八',province:'辽宁省',city:'丹东市',estimatedGrade:'严重污染',afDate:'2021-09-06',afTime:'17:00'},
-        {id:17,realName:'吴九',province:'辽宁省',city:'锦州市',estimatedGrade:'优',afDate:'2021-09-07',afTime:'18:00'},
-        {id:18,realName:'郑十',province:'辽宁省',city:'营口市',estimatedGrade:'良',afDate:'2021-09-08',afTime:'19:00'},])
+    const feedbackList = ref([{id:12,province:'辽宁省',city:'沈阳市',aqiGrade:'良（一）',afDate:'2021-09-01',afTime:'12:00',gridName:'李四',supervisorName:'张三'},
+        {id:13,province:'辽宁省',city:'大连市',aqiGrade:'优（一）',afDate:'2021-09-02',afTime:'13:00',gridName:'李四',supervisorName:'张三'},
+        {id:14,province:'辽宁省',city:'鞍山市',aqiGrade:'轻度污染（三）',afDate:'2021-09-03',afTime:'14:00',gridName:'李四',supervisorName:'张三'},
+        {id:11,province:'辽宁省',city:'抚顺市',aqiGrade:'中度污染（四）',afDate:'2021-09-04',afTime:'15:00',gridName:'李四',supervisorName:'张三'},
+        {id:15,province:'辽宁省',city:'本溪市',aqiGrade:'重度污染（五）',afDate:'2021-09-05',afTime:'16:00',gridName:'李四',supervisorName:'张三'},
+        {id:16,province:'辽宁省',city:'丹东市',aqiGrade:'严重污染（六）',afDate:'2021-09-06',afTime:'17:00',gridName:'李四',supervisorName:'张三'},
+        {id:17,province:'辽宁省',city:'锦州市',aqiGrade:'优（一）',afDate:'2021-09-07',afTime:'18:00',gridName:'李四',supervisorName:'张三'},
+        {id:18,province:'辽宁省',city:'营口市',aqiGrade:'良（二）',afDate:'2021-09-08',afTime:'19:00',gridName:'李四',supervisorName:'张三'},
+    ])
     const handleChangeGrid = () =>{
         //获取列表
         let list = selectedOptions.value
@@ -47,6 +48,7 @@ import { provinceAndCityData } from 'element-china-area-data';
         {value: '6',label: '严重污染（六级）'}
     ]
     const handleDetail = (row) =>{
+        dialogVisible.value = true;
         console.log("详情",row)
     }
     const handleAssign = (row) =>{
@@ -70,13 +72,7 @@ import { provinceAndCityData } from 'element-china-area-data';
                     </el-cascader>
                 </div>
                 <div class="flex-item">
-                    <span class="text">预估等级</span>
-                    <el-select v-model="aqiLevel" clearable placeholder="全部" style="width: 180px">
-                        <el-option v-for="item in aqiLevelOptions" :key="item.value" :label="item.label" :value="item.value" />
-                    </el-select>
-                </div>
-                <div class="flex-item">
-                    <span class="text">反馈日期</span>
+                    <span class="text">确认日期</span>
                     <el-date-picker
                         v-model="feedbackDate"
                         type="date"
@@ -97,23 +93,22 @@ import { provinceAndCityData } from 'element-china-area-data';
         </template>
         <el-table :data="feedbackList" class="table">
             <el-table-column label="编号" width="100" prop="id" align="center"> </el-table-column>
-            <el-table-column label="反馈者姓名" prop="realName" align="center"></el-table-column>
             <el-table-column label="所在省" prop="province" align="center"></el-table-column>
             <el-table-column label="所在市" prop="city" align="center"></el-table-column>
-            <el-table-column label="预估污染等级" prop="estimatedGrade" align="center"></el-table-column>
-            <el-table-column label="反馈日期" prop="afDate" align="center"></el-table-column>
-            <el-table-column label="反馈时间" prop="afTime" align="center"></el-table-column>
+            <el-table-column label="AQI等级" prop="aqiGrade" align="center"></el-table-column>
+            <el-table-column label="确认日期" prop="afDate" align="center"></el-table-column>
+            <el-table-column label="确认时间" prop="afTime" align="center"></el-table-column>
+            <el-table-column label="网格员" prop="gridName" align="center"></el-table-column>
+            <el-table-column label="反馈者" prop="supervisorName" align="center"></el-table-column>
             <el-table-column label="操作" width="100" align="center">
                 <template #default="scope">
                     <el-button :icon="Document" circle plain type="primary" @click="handleDetail(scope.row)" ></el-button>
-                    <el-button :icon="Pointer" circle plain type="success" @click="handleAssign(scope.row)" ></el-button>
                 </template>
             </el-table-column>
             <template #empty>
                 <el-empty description="没有数据" />
             </template>
         </el-table>
-        
 
         <el-dialog v-model="dialogVisible">
             <el-descriptions
@@ -122,7 +117,7 @@ import { provinceAndCityData } from 'element-china-area-data';
                 :size="size"
                 border
             >
-                <el-descriptions-item >
+                <el-descriptions-item>
                     <template #label>
                         <div class="cell-item">
                             <el-icon style="margin: 5px;"><user /></el-icon>
@@ -241,7 +236,5 @@ import { provinceAndCityData } from 'element-china-area-data';
 }
 .cell-item{
     display: flex;
-    width: 200px;
 }
-
 </style>

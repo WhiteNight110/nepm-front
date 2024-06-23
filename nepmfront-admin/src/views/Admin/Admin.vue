@@ -90,7 +90,7 @@ import { ArrowRight, Grid, List, UserFilled } from '@element-plus/icons-vue'
                 <router-view />
             </el-main>
             <!-- 底部区域 -->
-            <el-footer style="height: 40px;">neusoft ©2024</el-footer>
+            <el-footer style="height: 30px;">neusoft ©2024</el-footer>
         </el-container>
     </el-container>
 </template>

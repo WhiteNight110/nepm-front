@@ -19,7 +19,7 @@ request.interceptors.request.use(config => {
     }else{
         console.log("url=",config.url)
         if(config.url !== 'admins/getAdminsByCode' && config.url !== 'admins/adminsRegister'
-             && config.url !== 'admins/getCaptcha' && config.url !== 'admins/checkCaptcha'){
+             && config.url.substring(0,17) !== 'admins/getCaptcha' && config.url.substring(0,19) !== 'admins/checkCaptcha'){
             console.log("用户认证失败，请重新登录")
             ElMessage({
                 message: '用户认证失败，请重新登录',
@@ -51,7 +51,7 @@ request.interceptors.response.use(response => {
 }, (error) => {
     console.log('error!',error);
     ElMessage({
-        message: error.message,
+        message: error,
         type: 'error',
     })
     router.push({name: 'Login'});
