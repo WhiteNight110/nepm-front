@@ -20,6 +20,7 @@ import { getFeedbackList } from '@/api/feedback';
     const aqiLevel = ref('')
     const feedbackDate = ref('')
     const selectedOptions = ref([])
+    const dialogSelectedOptions = ref([])
     const dialogVisible = ref(false)
     const currentPage = ref(1)
     const pageSize = ref(0)
@@ -27,6 +28,11 @@ import { getFeedbackList } from '@/api/feedback';
     const selectItem = ref()
     const feedbackList = ref([])
     const dialogTitle = ref('反馈详情')
+    const dialogProvinceCity = ref('')
+    const state = ref(false)
+    const gridMemberList = ref([])
+    const dialogProvinceId = ref('')
+    const dialogCityId = ref('')
     const queryForm = reactive({
         province: '',
         city: '',
@@ -76,6 +82,14 @@ import { getFeedbackList } from '@/api/feedback';
     }
     const handleAssign = (row) =>{
         dialogTitle.value = '任务指派';
+        dialogCityId.value = row.cityId;
+        dialogProvinceId.value = row.provinceId;
+        dialogProvinceCity.value = codeToText[dialogProvinceId.value] + '/' + codeToText[dialogCityId.value];
+        //获取网格员列表
+        // getGridMemberList({ provinceId : dialogProvinceId, cityId : dialogCityId }).then(res => {
+        //     gridMemberList.value = res.data.data;
+        //     console.log("网格员列表",gridMemberList.value)
+        // })
         dialogVisible.value = true;
         selectItem.value = row;
     }
@@ -251,6 +265,33 @@ import { getFeedbackList } from '@/api/feedback';
                     <el-tag size="small" class="info-tag">{{ selectItem.afDate.substr(0,10) }}</el-tag>
                 </el-descriptions-item>
             </el-descriptions>
+            <!-- 操作栏 -->
+            <div class="dialog-footer" v-if="dialogTitle === '任务指派'">
+                <span>是否异地指派</span>
+                <el-switch
+                    class="dialog-footer-item"
+                    v-model="state"
+                    size="large"
+                />
+                <el-cascader
+                    class="dialog-footer-item"
+                    size="default"
+                    :placeholder=dialogProvinceCity
+                    :options="provinceAndCityData"
+                    clearable="true"
+                    v-model="dialogSelectedOptions"
+                    :disabled="!state"
+                    :props="{ expandTrigger: 'hover', checkStrictly: true }">
+                </el-cascader>
+                <el-cascader
+                    class="dialog-footer-item"
+                    size="default"
+                    placeholder={{ gridMemberList[0].realName }}
+                    :options="gridMemberList"
+                    v-model="dialogSelectedOptions"
+                    :props="{ expandTrigger: 'hover', checkStrictly: true }">
+                </el-cascader>
+            </div>
         </el-dialog>
 
         <template #footer>
@@ -305,5 +346,9 @@ import { getFeedbackList } from '@/api/feedback';
 }
 .info-tag{
     margin-right: 10px;
+}
+.dialog-footer-item{
+    margin-left: 15px;
+    margin-right: 15px;
 }
 </style>

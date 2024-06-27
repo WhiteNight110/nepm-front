@@ -4,7 +4,7 @@
         <el-table
           :data="listPull"
           style="width: 100%; font-size: large;"
-          max-height="100vh"
+          max-height="85vh"
           :row-class-name="tableRowClassName"
         >
           <el-table-column prop="estimatedGrade" width="80px" style="font-size: 20px;">
@@ -121,7 +121,7 @@
 }
 
 .grade-blue {
-  background-color: rgb(180, 230, 72);
+  background-color: lightblue;
 }
 
 .grade-yellow {
