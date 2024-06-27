@@ -1,6 +1,8 @@
 <script setup>
 import avatar from '@/assets/logo.png'
 import { ArrowRight, Grid, List, UserFilled } from '@element-plus/icons-vue'
+import { getFeedbackList } from '@/api/feedback';
+
 </script>
 
 <template>
@@ -84,9 +86,7 @@ import { ArrowRight, Grid, List, UserFilled } from '@element-plus/icons-vue'
             </el-header>
             <!-- 中间区域 -->
             <el-main style="padding: 10px;">
-                <!-- <div style="width: 100%; height: 570px; background-color: white;">
-                    内容展示区
-                </div> -->
+                
                 <router-view />
             </el-main>
             <!-- 底部区域 -->

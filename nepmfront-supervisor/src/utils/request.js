@@ -18,13 +18,9 @@ request.interceptors.request.use(config => {
         config.headers.Authorization = tokenStore.token
     }else{
         console.log("url=",config.url)
-        if(config.url !== 'admins/getAdminsByCode' && config.url !== 'admins/adminsRegister'
-             && config.url.substring(0,17) !== 'admins/getCaptcha' && config.url.substring(0,19) !== 'admins/checkCaptcha'){
+        if(config.url !== 'supervisor/getSupervisorById' && config.url !== 'supervisor/saveSupervisor'
+             && config.url !== 'supervisor/getSupervisorByIdByPass'){
             console.log("用户认证失败，请重新登录")
-            ElMessage({
-                message: '用户认证失败，请重新登录',
-                type: 'warning',
-            })
             router.push({name: 'Login'});
             return Promise.reject("用户认证失败，请重新登录");
         }
@@ -50,8 +46,7 @@ request.interceptors.response.use(response => {
     }
 }, (error) => {
     console.log('error!',error);
-    console.log("请求失败，返回登录页")
-    router.push({name: 'Login'});
+    
     return Promise.reject(error);
 });
 

@@ -1,20 +1,37 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
+//导入pinia
+import { createPinia } from 'pinia';
+//导入pinia持久化插件
+import { createPersistedState } from 'pinia-persistedstate-plugin';
 
-import 'font-awesome/css/font-awesome.min.css'
+//导入element-plus框架
+import ElementPlus from 'element-plus';
+import 'element-plus/theme-chalk/index.css';
 
-//vue路由守卫实现权限认证
-router.beforeEach(function(to,from,next){
-    //从前端session中获取登录信息
-    let supervisor = sessionStorage.getItem('supervisor');
-    //路由到“网格分配”、“预估AQI”、“历史反馈列表”，是需要判断是否登录
-    if(to.path=='/selectGrid'||to.path=='/selectAqi'||to.path=='/feedbackList'){
-        if(supervisor==null){
-            router.push('/login');
-        }
-    }
-    next();
-});
+import TDesign from 'tdesign-mobile-vue';
+// 引入TDesign组件库的少量全局样式变量
+import 'tdesign-mobile-vue/es/style/index.css';
 
-createApp(App).use(router).mount('#app')
+
+
+//导入封装的axios
+import request from "@/utils/request";
+
+// 引入组件库的少量全局样式变量
+import 'tdesign-mobile-vue/es/style/index.css';
+
+// 定义特性标志
+window.__VUE_PROD_DEVTOOLS__ = false;
+window.__VUE_PROD_HYDRATION_MISMATCH_DETAILS__ = false;
+
+const app = createApp(App);
+const pinia = createPinia();
+const persist = createPersistedState();
+pinia.use(persist)
+
+app.use(router).use(ElementPlus).use(TDesign).use(pinia);
+app.config.globalProperties.Request = request;
+app.mount('#app')
+// createApp(App).use(router).use(ElementPlus).mount('#app')

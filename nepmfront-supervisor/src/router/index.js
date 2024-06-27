@@ -1,42 +1,47 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import Login from '../views/Login/Login.vue'
-import Register from '../views/Register/Register.vue'
-import SelectGrid from '../views/SelectGrid/SelectGrid.vue'
-import SelectAqi from '../views/SelectAqi/SelectAqi.vue'
-import FeedbackList from '../views/FeedbackList/FeedbackList.vue'
+import { useTokenStore } from '@/stores/token'
 
 const routes = [
   {
     path: '/',
-    name: 'home',
-    component: Login
-  },{
+    redirect: '/login'
+  },
+  {
     path: '/login',
     name: 'Login',
-    component: Login
-  },{
+    component: () => import('../views/Login.vue')
+  },
+  {
     path: '/register',
     name: 'Register',
-    component: Register
-  },{
-    path: '/selectGrid',
-    name: 'SelectGrid',
-    component: SelectGrid
-  },{
-    path: '/selectAqi',
-    name: 'SelectAqi',
-    component: SelectAqi
-  },{
-    path: '/feedbackList',
-    name: 'FeedbackList',
-    component: FeedbackList
+    component: () => import('../views/Register.vue')
+  },
+  {
+    path: '/supervisor',
+    name: 'Supervisor',
+    component: () => import('../views/Supervisor.vue'),
+    children : [
+      {path: '', name: 'Home', component: () => import('../views/Home.vue')},
+      {path: '/history', name: 'History', component: () => import('../views/History.vue')},
+      {path: '/mine', name: 'Mine', component: () => import('../views/Mine.vue')},
+    ]
   }
 ]
 
 const router = createRouter({
   history: createWebHashHistory(),
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  let tokenStore = useTokenStore();
+  const token = tokenStore.token;
+  if (token || to.path === '/login' || to.path === '/register') {
+      next();
+  } else {
+      console.log('token为空');
+      next({ path: '/login' });
+  }
 })
 
 export default router

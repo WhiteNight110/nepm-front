@@ -1,11 +1,11 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-
+import { useTokenStore } from '@/stores/token'
 
 const routes = [
   {
     path: '/',
     name: 'Home',
-    component: () => import('../views/Admin/Admin.vue')
+    component: () => import('../views/Login/Login.vue')
   },
   {
     path: '/login',
@@ -38,7 +38,8 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem('token');
+  let tokenStore = useTokenStore();
+  const token = tokenStore.token;
   if (token || to.path === '/login' || to.path === '/register') {
       next();
   } else {

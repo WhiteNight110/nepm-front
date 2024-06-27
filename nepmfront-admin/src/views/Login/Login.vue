@@ -88,7 +88,7 @@
                             router.push('/admin');
                         }else{
                             //登陆失败则提示错误信息
-                            ElMessage({message: data.data,type: 'error',})
+                            ElMessage({message: data.message,type: 'error',})
                         }
                         }).catch(error => {
                         console.log(error);
@@ -97,7 +97,7 @@
                         ElMessage({message: '验证码错误',type: 'error',})
                     }
                 }else{
-                    ElMessage({message: data.data,type: 'error',})
+                    ElMessage({message: data.message,type: 'error',})
                     return;
                 }
             })

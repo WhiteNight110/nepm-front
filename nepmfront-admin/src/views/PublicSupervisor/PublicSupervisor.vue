@@ -10,22 +10,29 @@ import {
     Warning,
     
 } from '@element-plus/icons-vue'
-import { ref } from 'vue'
-import { provinceAndCityData } from 'element-china-area-data';
+import { ref,onMounted, reactive } from 'vue'
+import { provinceAndCityData, codeToText } from 'element-china-area-data';
+import { getFeedbackList } from '@/api/feedback';
+    onMounted(() => {
+        query({});
+    });
     const radio = ref(0)
     const aqiLevel = ref('')
     const feedbackDate = ref('')
     const selectedOptions = ref([])
-    const dialogVisible = ref(true)
-    const selectItem = ref([{id:13,realName:'李四',province:'辽宁省',city:'大连市',estimatedGrade:'优',afDate:'2021-09-02',afTime:'13:00'}])
-    const feedbackList = ref([{id:12,realName:'张三',province:'辽宁省',city:'沈阳市',estimatedGrade:'良',afDate:'2021-09-01',afTime:'12:00'},
-        {id:13,realName:'李四',province:'辽宁省',city:'大连市',estimatedGrade:'优',afDate:'2021-09-02',afTime:'13:00'},
-        {id:14,realName:'王五',province:'辽宁省',city:'鞍山市',estimatedGrade:'轻度污染',afDate:'2021-09-03',afTime:'14:00'},
-        {id:11,realName:'赵六',province:'辽宁省',city:'抚顺市',estimatedGrade:'中度污染',afDate:'2021-09-04',afTime:'15:00'},
-        {id:15,realName:'孙七',province:'辽宁省',city:'本溪市',estimatedGrade:'重度污染',afDate:'2021-09-05',afTime:'16:00'},
-        {id:16,realName:'周八',province:'辽宁省',city:'丹东市',estimatedGrade:'严重污染',afDate:'2021-09-06',afTime:'17:00'},
-        {id:17,realName:'吴九',province:'辽宁省',city:'锦州市',estimatedGrade:'优',afDate:'2021-09-07',afTime:'18:00'},
-        {id:18,realName:'郑十',province:'辽宁省',city:'营口市',estimatedGrade:'良',afDate:'2021-09-08',afTime:'19:00'},])
+    const dialogVisible = ref(false)
+    const currentPage = ref(1)
+    const pageSize = ref(0)
+    const total = ref(0)
+    const selectItem = ref()
+    const feedbackList = ref([])
+    const dialogTitle = ref('反馈详情')
+    const queryForm = reactive({
+        province: '',
+        city: '',
+        estimatedGrade: '',
+        afDate: ''
+    })
     const handleChangeGrid = () =>{
         //获取列表
         let list = selectedOptions.value
@@ -39,69 +46,125 @@ import { provinceAndCityData } from 'element-china-area-data';
         }
     }
     const aqiLevelOptions = [
-        {value: '1',label: '优（一级）'},
-        {value: '2',label: '良（二级）'},
-        {value: '3',label: '轻度污染（三级）'},
-        {value: '4',label: '中度污染（四级）'},
-        {value: '5',label: '重度污染（五级）'},
-        {value: '6',label: '严重污染（六级）'}
+        '优（一级）',
+        '良（二级）',
+        '轻度污染（三级）',
+        '中度污染（四级）',
+        '重度污染（五级）',
+        '严重污染（六级）'
     ]
+    const query = (data) =>{
+        console.log("data:",data)
+        getFeedbackList(data).then(res => {
+            pageSize.value = res.data.data.pageSize;
+            total.value = res.data.data.total;
+            currentPage.value = res.data.data.pageNum;
+            feedbackList.value = res.data.data.list;
+            console.log(feedbackList.value)
+            //将列表中的省市代码转换为文字
+            feedbackList.value.forEach(item => {
+                item.province = codeToText[item.province]
+                item.city = codeToText[item.city]
+            })
+        })
+    }
     const handleDetail = (row) =>{
         console.log("详情",row)
+        dialogTitle.value = '反馈详情';
+        dialogVisible.value = true;
+        selectItem.value = row;
     }
     const handleAssign = (row) =>{
-        console.log("指派",row)
+        dialogTitle.value = '任务指派';
+        dialogVisible.value = true;
+        selectItem.value = row;
+    }
+    const handlepageChange = (newPage) => {
+        currentPage.value = newPage;
+        query({ page: currentPage.value, size: pageSize.value });
+    };
+    const handleSizeChange = (newSize) => {
+        pageSize.value = newSize;
+        query({ page: currentPage.value, size: pageSize.value });
+    };
+    const getAqiLevelColor = (level) => {
+        switch (level) {
+            case 1: return 'lightgreen';
+            case 2: return 'lightblue';
+            case 3: return 'lightyellow';
+            case 4: return 'orange';
+            case 5: return 'red';
+            case 6: return 'purple';
+            default: return 'black';
+        }
     }
 </script>
 <template>
     <el-card class="page-container">
         <template #header>
             <div class="header">
-                <div class="cascader">
-                    <span class="text">省市</span>
-                    <el-cascader
-                        size="default"
-                        placeholder="全部"
-                        :options="provinceAndCityData"
-                        clearable="true"
-                        v-model="selectedOptions"
-                        :props="{ expandTrigger: 'hover', checkStrictly: true }"
-                        @change="handleChangeGrid">
-                    </el-cascader>
-                </div>
-                <div class="flex-item">
-                    <span class="text">预估等级</span>
-                    <el-select v-model="aqiLevel" clearable placeholder="全部" style="width: 180px">
-                        <el-option v-for="item in aqiLevelOptions" :key="item.value" :label="item.label" :value="item.value" />
-                    </el-select>
-                </div>
-                <div class="flex-item">
-                    <span class="text">反馈日期</span>
-                    <el-date-picker
-                        v-model="feedbackDate"
-                        type="date"
-                        placeholder="全部"
-                        style="width: 130px"
-                    />
-                </div>
-                <div class="button">
-                    <el-button type="danger">清空</el-button>
-                    <el-button type="primary">查询</el-button>
-                </div>
-				
-				<el-radio-group v-model="radio">
-					<el-radio :value="0">未指派</el-radio>
-					<el-radio :value="1">已指派</el-radio>
-				</el-radio-group>
+                <el-form :inline="true" :model="queryForm" class="demo-form-inline" style="width: 100%">
+                    <el-form-item class="flex-item" label="省市">
+                        <el-cascader
+                            size="default"
+                            placeholder="全部"
+                            :options="provinceAndCityData"
+                            clearable="true"
+                            v-model="selectedOptions"
+                            :props="{ expandTrigger: 'hover', checkStrictly: true }"
+                            @change="handleChangeGrid">
+                        </el-cascader>
+                    </el-form-item>
+                    <el-form-item class="flex-item" label="预估等级">
+                            <el-select v-model="queryForm.aqiLevel" clearable placeholder="全部" style="width: 180px">
+                                <el-option v-for="item in aqiLevelOptions" :key="item.value" :label="item.label" :value="item.value" />
+                            </el-select>
+                    </el-form-item>
+                    <el-form-item class="flex-item" label="反馈日期">
+                        <el-date-picker
+                            v-model="feedbackDate"
+                            type="date"
+                            placeholder="全部"
+                            style="width: 130px"
+                        />
+                    </el-form-item>
+                    <el-form-item class="flex-item">
+                        <el-button type="danger">清空</el-button>
+                        <el-button type="primary" @click="query">查询</el-button>
+                    </el-form-item>
+                    <el-form-item class="flex-item">
+                        <el-radio-group v-model="radio">
+                            <el-radio :value="0">未指派</el-radio>
+                            <el-radio :value="1">已指派</el-radio>
+                        </el-radio-group>
+                    </el-form-item>
+                </el-form>
+                
             </div>
         </template>
         <el-table :data="feedbackList" class="table">
-            <el-table-column label="编号" width="100" prop="id" align="center"> </el-table-column>
-            <el-table-column label="反馈者姓名" prop="realName" align="center"></el-table-column>
-            <el-table-column label="所在省" prop="province" align="center"></el-table-column>
-            <el-table-column label="所在市" prop="city" align="center"></el-table-column>
-            <el-table-column label="预估污染等级" prop="estimatedGrade" align="center"></el-table-column>
-            <el-table-column label="反馈日期" prop="afDate" align="center"></el-table-column>
+            <el-table-column label="编号" width="100" prop="afId" align="center"> </el-table-column>
+            <el-table-column label="反馈者姓名" prop="supervisor.realName" align="center"></el-table-column>
+            <el-table-column label="所在省" align="center">
+                <template v-slot:default="scope">
+                    <span>{{ codeToText[scope.row.provinceId] }}</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="所在市" align="center">
+                <template v-slot:default="scope">
+                    <span>{{ codeToText[scope.row.cityId] }}</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="预估污染等级" align="center">
+                <template v-slot:default="scope">
+                    <span :style="{ color: getAqiLevelColor(scope.row.estimatedGrade) }">{{ aqiLevelOptions[scope.row.estimatedGrade] }}</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="反馈日期" prop="afDate" align="center">
+                <template v-slot:default="scope">
+                    <span>{{ scope.row.afDate.substr(0,10) }}</span>
+                </template>
+            </el-table-column>
             <el-table-column label="反馈时间" prop="afTime" align="center"></el-table-column>
             <el-table-column label="操作" width="100" align="center">
                 <template #default="scope">
@@ -113,11 +176,10 @@ import { provinceAndCityData } from 'element-china-area-data';
                 <el-empty description="没有数据" />
             </template>
         </el-table>
-        
-
+        <!--详情和指派弹窗-->
         <el-dialog v-model="dialogVisible">
             <el-descriptions
-                title="Vertical list with border"
+                :title=dialogTitle
                 :column="1"
                 :size="size"
                 border
@@ -129,7 +191,7 @@ import { provinceAndCityData } from 'element-china-area-data';
                             <span class="dialog-text">公众监督反馈者编号</span>
                         </div>
                     </template>
-                    kooriookami
+                    {{ selectItem.afId }}
                 </el-descriptions-item>
                 <el-descriptions-item>
                     <template #label>
@@ -138,7 +200,9 @@ import { provinceAndCityData } from 'element-china-area-data';
                             <span class="dialog-text">反馈者信息</span>
                         </div>
                     </template>
-                    18100000000
+                    <el-tag size="small" class="info-tag">{{ selectItem.supervisor.realName }}</el-tag>
+                    <el-tag size="small" class="info-tag">{{ selectItem.supervisor.sex==1?'男':'女' }}</el-tag>
+                    <el-tag size="small" class="info-tag">{{ selectItem.supervisor.birthday.substr(0,10) }}</el-tag>
                 </el-descriptions-item>
                 <el-descriptions-item>
                     <template #label>
@@ -147,7 +211,7 @@ import { provinceAndCityData } from 'element-china-area-data';
                             <span class="dialog-text">反馈者联系电话</span>
                         </div>
                     </template>
-                    18100000000
+                    {{ selectItem.supervisor.telId}}
                 </el-descriptions-item>
                 <el-descriptions-item>
                     <template #label>
@@ -156,7 +220,8 @@ import { provinceAndCityData } from 'element-china-area-data';
                             <span class="dialog-text">反馈信息所在地址</span>
                         </div>
                     </template>
-                    18100000000
+                    <el-tag size="small" class="info-tag">{{ codeToText[selectItem.provinceId] }}</el-tag>
+                    <el-tag size="small" class="info-tag">{{ codeToText[selectItem.cityId] }}</el-tag>
                 </el-descriptions-item>
                 <el-descriptions-item>
                     <template #label>
@@ -165,7 +230,7 @@ import { provinceAndCityData } from 'element-china-area-data';
                             <span class="dialog-text">反馈信息描述</span>
                         </div>
                     </template>
-                    18100000000
+                    {{ selectItem.information }}
                 </el-descriptions-item>
                 <el-descriptions-item>
                     <template #label>
@@ -174,7 +239,7 @@ import { provinceAndCityData } from 'element-china-area-data';
                             <span class="dialog-text">预估等级</span>
                         </div>
                     </template>
-                    18100000000
+                    {{ aqiLevelOptions[selectItem.estimatedGrade] }}
                 </el-descriptions-item>
                 <el-descriptions-item>
                     <template #label>
@@ -183,14 +248,21 @@ import { provinceAndCityData } from 'element-china-area-data';
                             <span class="dialog-text">反馈日期时间</span>
                         </div>
                     </template>
-                    <el-tag size="small">2024-07-19</el-tag>
+                    <el-tag size="small" class="info-tag">{{ selectItem.afDate.substr(0,10) }}</el-tag>
                 </el-descriptions-item>
             </el-descriptions>
         </el-dialog>
 
         <template #footer>
             <div class="footer">
-                <el-pagination background layout="prev, pager, next" hide-on-single-page:true :page-size="7" :total="11" />
+                <el-pagination background layout="sizes,prev, pager, next"
+                 hide-on-single-page:true
+                 :page-size=pageSize
+                 :page-sizes="[5, 7, 10, 15]"
+                 :total=total
+                 :current-page="currentPage"
+                 @size-change="handleSizeChange"
+                 @current-change="handlepageChange"/>
             </div>
         </template>
     </el-card>
@@ -206,18 +278,6 @@ import { provinceAndCityData } from 'element-china-area-data';
     display: flex;
     align-items: center;
     justify-content: space-between;
-}
-.cascader{
-    display: flex;
-    align-items: center;
-}
-.text{
-    margin-right: 10px;
-}
-.button{
-    display: flex;
-    align-items: center;
-    gap: 20px;
 }
 .footer{
     display: flex;
@@ -243,5 +303,7 @@ import { provinceAndCityData } from 'element-china-area-data';
     display: flex;
     width: 200px;
 }
-
+.info-tag{
+    margin-right: 10px;
+}
 </style>
