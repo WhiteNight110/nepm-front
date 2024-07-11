@@ -26,14 +26,14 @@ export function register(data) {
 
 export function getCaptcha(data) {
     return request({
-        url: 'admins/getCaptcha?t='+new Date().getTime(),
+        url: 'captcha/getCaptcha?t='+new Date().getTime(),
         method: 'get',
     })
 }
 
 export function checkCaptcha(data) {
     return request({
-        url: 'admins/checkCaptcha',
+        url: 'captcha/checkCaptcha',
         method: 'post',
         params: {
             captcha: data.checkCode,

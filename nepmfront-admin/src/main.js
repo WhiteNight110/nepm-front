@@ -25,7 +25,6 @@ const app = createApp(App);
 const pinia = createPinia();
 const persist = createPersistedState();
 pinia.use(persist)
-
 app.use(router).use(ElementPlus).use(pinia);
 app.config.globalProperties.Request = request;
 app.mount('#app')

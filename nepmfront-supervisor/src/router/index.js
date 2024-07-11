@@ -21,7 +21,7 @@ const routes = [
     name: 'Supervisor',
     component: () => import('../views/Supervisor.vue'),
     children : [
-      {path: '', name: 'Home', component: () => import('../views/Home.vue')},
+      {path: '', name: 'Feedback', component: () => import('../views/Feedback.vue')},
       {path: '/history', name: 'History', component: () => import('../views/History.vue')},
       {path: '/mine', name: 'Mine', component: () => import('../views/Mine.vue')},
     ]

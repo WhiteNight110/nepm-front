@@ -1,21 +1,25 @@
 <template>
     <div class="wrapper">
       <t-pull-down-refresh v-model="refreshing" @refresh="onRefresh">
+        <t-navbar title="历史反馈" :fixed="false"></t-navbar>
         <el-table
           :data="listPull"
           style="width: 100%; font-size: large;"
           max-height="85vh"
           :row-class-name="tableRowClassName"
         >
-          <el-table-column prop="estimatedGrade" width="80px" style="font-size: 20px;">
+          <el-table-column prop="estimatedGrade" width="40px" style="font-size: 20px;">
             <template v-slot:default="scope">
-              <div :class="['grade-block', getGradeColor(scope.row.estimatedGrade)]"></div>
-              <span>{{ scope.row.estimatedGrade }}</span>
+              <div :class="['grade-block', getGradeColor(scope.row.estimatedGrade)]">{{ scope.row.estimatedGrade }}</div>
             </template>
           </el-table-column>
-          <el-table-column prop="afDate" width="130px" />
-          <el-table-column prop="afTime" />
-          <el-table-column prop="provinceId" >
+          <el-table-column prop="afDate" width="120px" />
+          <el-table-column prop="afTime" width="70px" >
+            <template v-slot:default="scope">
+              <span>{{ scope.row.afTime.substr(0,5) }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="provinceId">
             <template v-slot:default="scope">
               <span>{{ codeToText[scope.row.provinceId] }}</span>
             </template>
@@ -108,12 +112,22 @@
   display: relative;
   overflow-y: auto;
 }
+:deep(.el-table__row) {
+  height: 6vh;
+}
+:deep(.cell){
+  padding: 1vh;
+
+}
 .grade-block {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+  width: 20px;
+  height: 20px;
   margin-right: 5px;
   border-radius: 2px;
+  color: white; /* 字体颜色设为白色 */
 }
 
 .grade-green {

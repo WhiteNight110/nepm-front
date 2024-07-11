@@ -2,9 +2,6 @@
     <div class="wrapper">
       <div class="common-layout">
         <el-container class="el-container">
-            <el-header class="header">
-              <t-navbar :title='title' :fixed="false"/>
-            </el-header>
             <el-main class="main">
               <router-view />
             </el-main>
@@ -13,7 +10,7 @@
                 <t-tab-bar-item v-for="item in list" :key="item.value" :value="item.value">
                   {{ item.label }}
                   <template #icon>
-                    <t-icon :name="item.icon" />
+                     <span :class="item.icon"></span>
                   </template>
                 </t-tab-bar-item>
               </t-tab-bar>
@@ -25,22 +22,19 @@
   </template>
   <script setup>
     import { reactive, ref, watch } from 'vue';
-    import { register } from '@/api/login';
-    import { ElMessage } from 'element-plus';
-    import { Icon as TIcon } from 'tdesign-icons-vue-next';
     import router from '@/router';
 
-    const value = ref('Home');
+    const value = ref('Feedback');
     const titleList = reactive({
-      Home: '首页',
+      Feedback: '反馈',
       History: '历史反馈',
       Mine: '个人信息',
     });
-    const title = ref('首页')
+    const title = ref('反馈')
     const list = ref([
-      { value: 'Home', label: '首页', icon: 'home', index: 'home' },
-      { value: 'History', label: '历史', icon: 'history', index: 'history' },
-      { value: 'Mine', label: '我的', icon: 'user', index: 'mine' },
+      { value: 'Feedback', label: '反馈', icon: 'iconfont icon-zhihangfankui', index: 'Feedback' },
+      { value: 'History', label: '历史', icon: 'iconfont icon-lishi', index: 'history' },
+      { value: 'Mine', label: '我的', icon: 'iconfont icon-geren', index: 'mine' },
     ]);
     watch(() => value.value, (val) => {
       title.value = titleList[val];

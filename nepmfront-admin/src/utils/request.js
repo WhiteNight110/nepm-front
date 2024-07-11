@@ -5,7 +5,8 @@ import { useTokenStore } from "@/stores/token";
 
 
 const request = axios.create({
-    baseURL: 'http://10.1.232.79:8080/nepm/',
+    //10.1.232.79
+    baseURL: 'http://localhost:8080/nepm/',
     timeout: 10000,
 });
 
@@ -50,8 +51,7 @@ request.interceptors.response.use(response => {
     }
 }, (error) => {
     console.log('error!',error);
-    console.log("请求失败，返回登录页")
-    router.push({name: 'Login'});
+    
     return Promise.reject(error);
 });
 

@@ -14,7 +14,8 @@ import TDesign from 'tdesign-mobile-vue';
 // 引入TDesign组件库的少量全局样式变量
 import 'tdesign-mobile-vue/es/style/index.css';
 
-
+//导入图标
+import "@/assets/icon/iconfont.css";
 
 //导入封装的axios
 import request from "@/utils/request";

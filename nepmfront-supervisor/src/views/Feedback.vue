@@ -1,55 +1,16 @@
 <template>
   <div class="wrapper">
+    <t-navbar title="监督反馈" :fixed="false"></t-navbar>
     <t-table
       class="t-table-item"
       row-key="index"
       :data="aqiData"
-      :max-height="400"
+      :max-height="600"
       :columns="columns"
       stripe= true
       :show-header="showHeader"
       cell-empty-content="-"
     ></t-table>
-
-    <!-- <t-form
-      ref="form"
-      :data="formData"
-      :rules="rules"
-      reset-type="empty"
-      show-error-message
-      label-align="left"
-      scroll-to-first-error="auto"
-      @reset="onReset"
-      @submit="onSubmit">
-      <t-form-item label="省市">
-        <t-cell class="table-item" :note="note" arrow @click="showCascader" />
-        <t-cascader
-          class="table-item"
-          :visible="visible"
-          :value="address"
-          title="选择地址"
-          :options=provinceAndCityData
-          @change="onChange"
-        />
-      </t-form-item>
-      <t-form-item label="具体地址">
-        <t-input class="table-item" v-model="address" placeholder="具体地址" align="right"></t-input>
-      </t-form-item>
-      <t-form-item label="预估AQI">
-        <div class="table-item rate-demo-cell rate-demo-cell--space">
-          <t-rate v-model="formData.aqi" show-text :count="6" :icon="icon" :texts="texts" variant="filled" color="red" @change="changeRate" />
-        </div>
-      </t-form-item>
-      <t-form-item label="描述">
-        <t-textarea class="textarea table-item" v-model="formData.describtion" placeholder="请输入文字" :maxlength="500" indicator />
-      </t-form-item>
-      <t-form-item>
-        <div class="button-group">
-          <t-button class="submitButton table-item" theme="primary" variant="light" type="submit" size="large">提交</t-button>
-          <t-button class="submitButton table-item" theme="default" variant="base" type="reset" size="large">重置</t-button>
-        </div>
-      </t-form-item>
-    </t-form> -->
 
     <t-form
       ref="form"
@@ -71,6 +32,8 @@
           title="选择地址"
           :options=provinceAndCityData
           @change="onChange"
+          @close="visible = false"
+          clearable
         />
       </t-form-item>
       <t-form-item labelWidth="0px" class="t-form-item">
@@ -188,6 +151,7 @@
     formData.aqi = '';
     formData.describtion = '';
     formData.address = '';
+    address.value = '';
     aqi.value = 0;
     note.value = '请选择地址';
   }
@@ -201,7 +165,7 @@
   overflow-x: hidden;
 }
 .t-table-item {
-  margin-bottom: 1vh;
+  margin: 1vh 0;
 }
 .t-form-item {
   padding: 1vh 3vw;
@@ -220,7 +184,7 @@
   word-wrap: break-word; /* 单词换行 */
 }
 :deep(.t-table-item .t-table__body tr td) {
-  padding: 0px 2px;
+  padding: 4px 8px;
   text-align: center;
 }
 .rate-demo-cell {
@@ -252,7 +216,7 @@
   background-color: var(--bg-color-demo, #fff);
   gap: 2vw;
   box-sizing: border-box;
-  padding: 16px;
+  padding: 8px;
   display: flex;
   justify-content: space-between;
   position: relative;

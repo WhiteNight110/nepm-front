@@ -74,12 +74,7 @@
             if(!valid) return;
             //验证验证码
             var isChecked = false;
-            checkCaptcha(loginForm).then(response => {
-                console.log("response:",response);
-                const { data,status } = response;
-                if(status === 200) {
-                    if(data==true){
-                        login(loginForm).then(response => {
+            login(loginForm).then(response => {
                         console.log("response:",response);
                         const { data } = response;
                         if(data.code === 200) {
@@ -93,14 +88,33 @@
                         }).catch(error => {
                         console.log(error);
                         });
-                    }else{
-                        ElMessage({message: '验证码错误',type: 'error',})
-                    }
-                }else{
-                    ElMessage({message: data.message,type: 'error',})
-                    return;
-                }
-            })
+            // checkCaptcha(loginForm).then(response => {
+            //     console.log("response:",response);
+            //     const { data,status } = response;
+            //     if(status === 200) {
+            //         if(data==true){
+            //             login(loginForm).then(response => {
+            //             console.log("response:",response);
+            //             const { data } = response;
+            //             if(data.code === 200) {
+            //                 //登陆成功则记录token并跳转到主页
+            //                 tokenStore.setToken(data.data);
+            //                 router.push('/admin');
+            //             }else{
+            //                 //登陆失败则提示错误信息
+            //                 ElMessage({message: data.message,type: 'error',})
+            //             }
+            //             }).catch(error => {
+            //             console.log(error);
+            //             });
+            //         }else{
+            //             ElMessage({message: '验证码错误',type: 'error',})
+            //         }
+            //     }else{
+            //         ElMessage({message: data.message,type: 'error',})
+            //         return;
+            //     }
+            // })
         });
     };
 
@@ -129,4 +143,50 @@
         ]
     };  
 </script>
-<style scoped src="./style.css"></style>
+<style scoped>
+.wrapper {
+    width: 100%;
+    height: 100%;
+}
+.login-body {
+    width: 100%;
+    height: 100%;
+    background-image: url('@/assets/login-bg.png');
+    background-size: cover;
+    background-position: center;
+}
+.login-body .login-panel {
+    width: 300px;
+    height: calc(50vh);
+    float: right;
+    margin-top: 200px;
+    margin-right: 200px;
+    padding: 20px;
+    border-radius: 5px;
+    background-color: rgb(255, 255, 255,0.7);
+    box-shadow: 2px 2px 10px #ddd;
+}
+
+.login-body .login-title{
+    text-align: center;
+    font-size: 30px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.check-code-panel {
+    width: 100%;
+    display: flex;
+    text-align: center;
+}
+.input-panel{
+    flex: 1;
+    margin-right: 5px;
+}
+.check-code{
+    flex: 0.7;
+    cursor: pointer;
+    height: 38px;
+}
+</style>

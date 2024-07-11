@@ -12,11 +12,12 @@ import {
 } from '@element-plus/icons-vue'
 import { ref,onMounted, reactive } from 'vue'
 import { provinceAndCityData, codeToText } from 'element-china-area-data';
-import { getFeedbackList } from '@/api/feedback';
+import { getFeedbackList, getGridMemberList, assignAqiFeedback } from '@/api/data';
+import { ElMessage } from 'element-plus';
     onMounted(() => {
         query({});
     });
-    const radio = ref(0)
+    const radio = ref(-1)
     const aqiLevel = ref('')
     const feedbackDate = ref('')
     const selectedOptions = ref([])
@@ -29,8 +30,10 @@ import { getFeedbackList } from '@/api/feedback';
     const feedbackList = ref([])
     const dialogTitle = ref('反馈详情')
     const dialogProvinceCity = ref('')
-    const state = ref(false)
+    const dialogState = ref(0)
+    const remoteAssign = ref(false)
     const gridMemberList = ref([])
+    const selectGridMember = ref('')
     const dialogProvinceId = ref('')
     const dialogCityId = ref('')
     const queryForm = reactive({
@@ -41,14 +44,19 @@ import { getFeedbackList } from '@/api/feedback';
     })
     const handleChangeGrid = () =>{
         //获取列表
-        let list = selectedOptions.value
+        let list = dialogSelectedOptions.value
+        selectGridMember.value = ''
         console.log(list)
         if(list === undefined || list.length == 0){
-            console.log("省市未选择")
+            return;
         }else if(list.length == 1){
-            console.log("省市选择了省,代码为",list[0])
+            ElMessage({
+                message: '请选择市',
+                type: 'warning'
+            });
         }else if(list.length == 2){
             console.log("省市选择了市,省代码为",list[0],"市代码为",list[1])
+            getGridMemberListByCity({ cityId : list[1] })
         }
     }
     const aqiLevelOptions = [
@@ -74,43 +82,151 @@ import { getFeedbackList } from '@/api/feedback';
             })
         })
     }
+    //显示详情弹窗
     const handleDetail = (row) =>{
         console.log("详情",row)
         dialogTitle.value = '反馈详情';
         dialogVisible.value = true;
         selectItem.value = row;
     }
-    const handleAssign = (row) =>{
+    //显示指派任务弹窗
+    const handleAssign = async (row) =>{
+        if(row.state==1){
+            ElMessage({
+                message: '该任务已指派',
+                type: 'info'
+            });
+            return
+        }
         dialogTitle.value = '任务指派';
         dialogCityId.value = row.cityId;
         dialogProvinceId.value = row.provinceId;
         dialogProvinceCity.value = codeToText[dialogProvinceId.value] + '/' + codeToText[dialogCityId.value];
-        //获取网格员列表
-        // getGridMemberList({ provinceId : dialogProvinceId, cityId : dialogCityId }).then(res => {
-        //     gridMemberList.value = res.data.data;
-        //     console.log("网格员列表",gridMemberList.value)
-        // })
+        gridMemberList.value = []
+        dialogSelectedOptions.value = [dialogProvinceId.value, dialogCityId.value]
         dialogVisible.value = true;
         selectItem.value = row;
+        getGridMemberListByCity({ cityId : dialogCityId.value })
+    }
+    //根据省市获取网格员列表
+    const getGridMemberListByCity = (data) =>{
+        //获取网格员列表
+        getGridMemberList(data).then(res => {
+            console.log('网格员列表',res.data.data)
+            gridMemberList.value = res.data.data.map(item => ({
+                value: item.gmId,
+                label: item.gmName
+            }));
+        })
+        console.log('gridMemberList:',gridMemberList)
+    }
+    //点击指派按钮事件
+    const handleAssignTask = () => {
+        console.log("selectGridMember:",selectGridMember.value)
+        console.log("selectItem:",selectItem.value)
+        if(selectGridMember.value.length==0){
+            ElMessage({
+                message: '请选择指派网格员',
+                type: 'warning'
+            });
+            return
+        }
+        let data = {
+            afId: selectItem.value.afId,
+            gmId: selectItem.value.gmId
+        }
+        console.log(data)
+        //指派任务
+        assignAqiFeedback(data).then(res => {
+            console.log('指派结果',res);
+            ElMessage({
+                message: '指派成功',
+                type: 'success'
+            });
+            dialogVisible.value = false;
+            query({})
+        })
     }
     const handlepageChange = (newPage) => {
         currentPage.value = newPage;
-        query({ page: currentPage.value, size: pageSize.value });
+        let data = { page: currentPage.value, size: pageSize.value }
+        if(selectedOptions.value.length==1){
+            data.provinceId = selectedOptions.value[0]
+        }else{
+            data.cityId = selectedOptions.value[1]
+        }
+        if(feedbackDate.value!=''){
+            data.afDate = feedbackDate.value
+        }
+        if(queryForm.estimatedGrade!=''){
+            data.estimatedGrade = queryForm.estimatedGrade
+        }
+        if(radio.value!=''){
+            data.isAssign = radio.value
+        }
+        query(data);
     };
     const handleSizeChange = (newSize) => {
         pageSize.value = newSize;
-        query({ page: currentPage.value, size: pageSize.value });
+        let data = { page: currentPage.value, size: pageSize.value }
+        if(selectedOptions.value.length==1){
+            data.provinceId = selectedOptions.value[0]
+        }else{
+            data.cityId = selectedOptions.value[1]
+        }
+        if(feedbackDate.value!=''){
+            data.afDate = feedbackDate.value
+        }
+        if(queryForm.estimatedGrade!=''){
+            data.estimatedGrade = queryForm.estimatedGrade
+        }
+        if(radio.value!=''){
+            data.isAssign = radio.value
+        }
+        query(data);
     };
     const getAqiLevelColor = (level) => {
         switch (level) {
-            case 1: return 'lightgreen';
-            case 2: return 'lightblue';
-            case 3: return 'lightyellow';
-            case 4: return 'orange';
-            case 5: return 'red';
-            case 6: return 'purple';
+            case 0: return 'lightgreen';
+            case 1: return 'lightblue';
+            case 2: return 'orange';
+            case 3: return 'brown';
+            case 4: return 'red';
+            case 5: return 'purple';
             default: return 'black';
         }
+    }
+    //重置查询表单数据
+    const reset = () => {
+        queryForm.province = ''
+        queryForm.city = ''
+        queryForm.estimatedGrade = ''
+        queryForm.afDate = ''
+        feedbackDate.value = ''
+        selectedOptions.value = []
+        radio.value = 0
+        query({})
+    }
+    //根据查询表单查询
+    const queryByForm = () => {
+        let data = {pageSize: pageSize.value}
+        if(selectedOptions.value.length==1){
+            data.provinceId = selectedOptions.value[0]
+        }else{
+            data.cityId = selectedOptions.value[1]
+        }
+        if(feedbackDate.value!=''){
+            data.afDate = feedbackDate.value
+            console.log(data.afDate)
+        }
+        if(queryForm.estimatedGrade!=''){
+            data.estimatedGrade = queryForm.estimatedGrade
+        }
+        if(radio.value!=-1){
+            data.state = radio.value
+        }
+        console.log(data)
+        query(data)
     }
 </script>
 <template>
@@ -123,15 +239,14 @@ import { getFeedbackList } from '@/api/feedback';
                             size="default"
                             placeholder="全部"
                             :options="provinceAndCityData"
-                            clearable="true"
+                            clearable
                             v-model="selectedOptions"
-                            :props="{ expandTrigger: 'hover', checkStrictly: true }"
-                            @change="handleChangeGrid">
+                            :props="{ expandTrigger: 'hover', checkStrictly: true }">
                         </el-cascader>
                     </el-form-item>
                     <el-form-item class="flex-item" label="预估等级">
-                            <el-select v-model="queryForm.aqiLevel" clearable placeholder="全部" style="width: 180px">
-                                <el-option v-for="item in aqiLevelOptions" :key="item.value" :label="item.label" :value="item.value" />
+                            <el-select v-model="queryForm.estimatedGrade" clearable placeholder="全部" style="width: 180px">
+                                <el-option v-for="(item,index) in aqiLevelOptions" :key="index" :label="item" :value="index" />
                             </el-select>
                     </el-form-item>
                     <el-form-item class="flex-item" label="反馈日期">
@@ -143,14 +258,14 @@ import { getFeedbackList } from '@/api/feedback';
                         />
                     </el-form-item>
                     <el-form-item class="flex-item">
-                        <el-button type="danger">清空</el-button>
-                        <el-button type="primary" @click="query">查询</el-button>
-                    </el-form-item>
-                    <el-form-item class="flex-item">
                         <el-radio-group v-model="radio">
                             <el-radio :value="0">未指派</el-radio>
                             <el-radio :value="1">已指派</el-radio>
                         </el-radio-group>
+                    </el-form-item>
+                    <el-form-item class="flex-item button-item">
+                        <el-button type="danger" @click="reset">清空</el-button>
+                        <el-button type="primary" @click="queryByForm">查询</el-button>
                     </el-form-item>
                 </el-form>
                 
@@ -195,7 +310,6 @@ import { getFeedbackList } from '@/api/feedback';
             <el-descriptions
                 :title=dialogTitle
                 :column="1"
-                :size="size"
                 border
             >
                 <el-descriptions-item >
@@ -270,7 +384,7 @@ import { getFeedbackList } from '@/api/feedback';
                 <span>是否异地指派</span>
                 <el-switch
                     class="dialog-footer-item"
-                    v-model="state"
+                    v-model="remoteAssign"
                     size="large"
                 />
                 <el-cascader
@@ -278,19 +392,30 @@ import { getFeedbackList } from '@/api/feedback';
                     size="default"
                     :placeholder=dialogProvinceCity
                     :options="provinceAndCityData"
-                    clearable="true"
+                    clearable
                     v-model="dialogSelectedOptions"
-                    :disabled="!state"
-                    :props="{ expandTrigger: 'hover', checkStrictly: true }">
+                    :disabled="!remoteAssign"
+                    :props="{ expandTrigger: 'hover', checkStrictly: true }"
+                    @change="handleChangeGrid">
                 </el-cascader>
-                <el-cascader
-                    class="dialog-footer-item"
+                <el-select
+                    class="dialog-footer-item dialog-select" 
                     size="default"
-                    placeholder={{ gridMemberList[0].realName }}
-                    :options="gridMemberList"
-                    v-model="dialogSelectedOptions"
-                    :props="{ expandTrigger: 'hover', checkStrictly: true }">
-                </el-cascader>
+                    placeholder="指派网格员"
+                    v-model="selectGridMember"
+                    clearable
+                >
+                    <el-option
+                    v-for="member in gridMemberList"
+                    :key="member.value"
+                    :label="member.label"
+                    :value="member.value"
+                    />
+                </el-select>
+                <el-button
+                    class="dialog-footer-button"
+                    type="primary"
+                    @click="handleAssignTask">指派</el-button>
             </div>
         </el-dialog>
 
@@ -340,9 +465,19 @@ import { getFeedbackList } from '@/api/feedback';
 .dialog-text{
     align-self: center;
 }
+.dialog-select {
+    width: 150px;
+}
 .cell-item{
     display: flex;
     width: 200px;
+}
+.flex-item{
+    margin-bottom: 0px;
+}
+.button-item{
+    position: absolute;
+    right: 20px;
 }
 .info-tag{
     margin-right: 10px;
@@ -351,4 +486,13 @@ import { getFeedbackList } from '@/api/feedback';
     margin-left: 15px;
     margin-right: 15px;
 }
+.dialog-footer-button{
+    position:absolute;
+    right: 20px;
+    bottom: 20px;
+}
+:deep(el-descriptions__cell el-descriptions__label is-bordered-label){
+    width: 100px;
+}
+
 </style>
