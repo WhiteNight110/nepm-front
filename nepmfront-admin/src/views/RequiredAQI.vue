@@ -140,7 +140,8 @@ import { ElMessage } from 'element-plus';
             data.confirmDate = requiredDate.value
             console.log(data.confirmDate)
         }
-        if(queryForm.aqiGrade!=''){
+        console.log('aqiGrade:',queryForm.aqiGrade)
+        if(queryForm.aqiGrade !== null && queryForm.aqiGrade !== undefined && queryForm.aqiGrade !== ''){
             data.aqiLevel = queryForm.aqiGrade
         }
         console.log(data)

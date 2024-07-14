@@ -56,15 +56,6 @@
           <t-radio :block="false" name="radio" value="女" label="女" />
         </t-radio-group>
       </t-dialog>
-      <!-- <t-dialog
-        v-model:visible="isShowDialogBirthday"
-        close-on-overlay-click
-        title="修改生日"
-        :cancel-btn="cancelBtn"
-        :confirm-btn="confirmBtn"
-        @confirm="onBirthdayConfirm"
-        @cancel="onBirthdayCancel">
-      </t-dialog> -->
       <t-popup v-model="isShowDialogBirthday" placement="bottom">
           <t-date-time-picker
             :value="birthdayPicker"
@@ -81,20 +72,33 @@
   </div>
 </template>
 <script setup>
-  import { reactive, ref, h } from 'vue';
+  import { reactive, ref, h, onMounted } from 'vue';
   import { ChevronRightIcon, LockOnIcon } from 'tdesign-icons-vue-next';
-  import { updateInfo } from '@/api/info';
+  import { updateInfo,getInfo } from '@/api/info';
+  import { ElMessage } from 'element-plus';
 
   const avatarUrl = ref('https://avatars.githubusercontent.com/u/37282000?v=4');
   const chevronRightIcon = () => h(ChevronRightIcon);
   const name = ref('张三');
   const sex = ref('男');
   const birthday = ref('1999-01-01');
+  const nameInput = ref('');
+  const sexInput = ref(sex.value);
+  const birthdayPicker = ref(birthday.value);
   const isShowDialogAvatar = ref(false);
   const isShowDialogName = ref(false);
   const isShowDialogSex = ref(false);
   const isShowDialogBirthday = ref(false);
   const files = ref([]);
+  onMounted(async() => {
+    await getInfo().then(res => {
+      console.log(res);
+      name.value = res.data.data.realName;
+      sex.value = res.data.data.sex==1?'男':'女';
+      birthday.value = res.data.data.birthday.substring(0,10);
+    })
+
+  });
   const confirmBtn = {
     content: '确认',
     variant: 'text',
@@ -105,9 +109,6 @@
     variant: 'text',
     size: 'large',
   };
-  const nameInput = ref('');
-  const sexInput = ref(sex.value);
-  const birthdayPicker = ref(birthday.value);
   const onNameConfirm = () => {
     name.value = nameInput.value;
     isShowDialogName.value = false;
@@ -136,7 +137,11 @@
     updateInfo({
       realName: name.value,
       sex: sex.value=='男'?1:0,
-      birthday: birthday.value})
+      birthday: birthday.value}).then(res => {
+        if(res.data.code == 200){
+          ElMessage.success('保存成功');
+        }
+      })
   }
 </script>
 <style scoped>

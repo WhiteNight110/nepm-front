@@ -6,7 +6,7 @@ import { useTokenStore } from "@/stores/token";
 
 const request = axios.create({
     //10.1.232.79
-    baseURL: 'http://localhost:8080/nepm/',
+    baseURL: 'http://localhost:8000/',
     timeout: 10000,
 });
 
@@ -20,7 +20,7 @@ request.interceptors.request.use(config => {
     }else{
         console.log("url=",config.url)
         if(config.url !== 'admins/getAdminsByCode' && config.url !== 'admins/adminsRegister'
-             && config.url.substring(0,17) !== 'admins/getCaptcha' && config.url.substring(0,19) !== 'admins/checkCaptcha'){
+             && config.url.substring(0,18) !== 'captcha/getCaptcha' && config.url.substring(0,20) !== 'captcha/checkCaptcha'){
             console.log("用户认证失败，请重新登录")
             ElMessage({
                 message: '用户认证失败，请重新登录',

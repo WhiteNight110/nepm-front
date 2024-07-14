@@ -2,13 +2,51 @@
 import avatar from '@/assets/logo.png'
 import { ArrowRight, Grid, List, UserFilled } from '@element-plus/icons-vue'
 import { useRoute } from 'vue-router';
-import { computed } from 'vue'
+import { useTokenStore } from '@/stores/token';
+import router from "@/router";
+import { computed, onMounted } from 'vue'
+import { ref, watch } from 'vue'
+import { useUserStore } from '@/stores/user';
 const route = useRoute()
+const username = ref('')
+const pathList = ref()
 
+onMounted(() => {
+  username.value = useUserStore().userCode
+  getCurrentPath()
+})
+
+const getCurrentPath = () => {
+    console.log('route.matched',route.matched);
+    pathList.value = route.matched.filter(item => item.meta && item.meta.title);
+    console.log('pathList',pathList.value);
+}
+
+watch(route, (to, from) => {
+    pathList.value = to.matched.filter(item => item.meta && item.meta.title);
+    console.log('to',to);
+    console.log('from',from);
+    console.log('pathList',pathList.value);
+}, { immediate: true });
 const isRouteMatched = computed(() => {
   const matchedRoutes = ['/data/publicSupervisor', '/data/requiredAQI', '/count/provincialGrouping', '/count/aqiExponential', '/count/aqiTrend', '/count/otherData']
   return matchedRoutes.includes(route.path)
 })
+const handleCommand = (command) => {
+  switch (command) {
+    // case 'avatar':
+    //   console.log('更换头像')
+    //   break
+    // case 'password':
+    //   console.log('重置密码')
+    //   break
+    case 'logout':
+      router.push('/login')
+      useTokenStore().removeToken()
+      useUserStore().removeuserCode()
+      break
+  }
+}
 </script>
 
 <template>
@@ -57,19 +95,19 @@ const isRouteMatched = computed(() => {
         <el-container style="background-color: #f0f0f0;">
             <!-- 头部区域 -->
             <el-header class="header">
-              <el-breadcrumb :separator-icon="ArrowRight" style="margin-bottom: 10px;" class="index">
+              <!-- <el-breadcrumb :separator-icon="ArrowRight" style="margin-bottom: 10px;" class="index">
                 <el-breadcrumb-item :to="{ path: '/' }">homepage</el-breadcrumb-item>
                 <el-breadcrumb-item>公众监督数据管理</el-breadcrumb-item>
                 <el-breadcrumb-item>公众监督数据列表</el-breadcrumb-item>
-              </el-breadcrumb>
-
-              <!-- 面包屑 -->
-              <!-- <el-breadcrumb :separator-icon="ArrowRight"  class="breadcrumb">
-                <el-breadcrumb-item :to="item.path" v-for="item in breadList" :key="item.id">{{ item.meta.title }}</el-breadcrumb-item>
               </el-breadcrumb> -->
 
+              <!-- 面包屑 -->
+              <el-breadcrumb :separator-icon="ArrowRight" style="margin-bottom: 10px;" class="breadcrumb">
+                <el-breadcrumb-item :to="item.path" v-for="item in pathList" :key="item.id">{{ item.meta.title }}</el-breadcrumb-item>
+              </el-breadcrumb>
+
               <div class="user-info">
-                <div class="user-text">用户：<strong>acc</strong></div>
+                <div class="user-text">用户：<strong>{{ username }}</strong></div>
                 <el-dropdown placement="bottom-end" class="dropdown-right">
                     <span class="el-dropdown__box">
                         <el-avatar :src="avatar" />
@@ -77,12 +115,15 @@ const isRouteMatched = computed(() => {
                             <CaretBottom />
                         </el-icon>
                     </span>
-                    <template #dropdown>
-                        <el-dropdown-menu>
-                            <el-dropdown-item command="avatar">更换头像</el-dropdown-item>
-                            <el-dropdown-item command="password">重置密码</el-dropdown-item>
-                            <el-dropdown-item command="logout">退出登录</el-dropdown-item>
-                        </el-dropdown-menu>
+                    <template #dropdown >
+                        <el-dropdown @command="handleCommand">
+                            <el-dropdown-menu >
+                                <!-- <el-dropdown-item command="avatar">更换头像</el-dropdown-item>
+                                <el-dropdown-item command="password">重置密码</el-dropdown-item> -->
+                                <el-dropdown-item command="logout">退出登录</el-dropdown-item>
+                            </el-dropdown-menu>
+                        </el-dropdown>
+                        
                     </template>
                 </el-dropdown>
               </div>
@@ -92,7 +133,7 @@ const isRouteMatched = computed(() => {
                 <div v-if="!isRouteMatched" class="background-image-container">
                     <div class="background-image"></div>
                 </div>
-                <router-view v-else style="margin: 10px" />
+                <router-view v-else style="margin: 5px;" />
             </el-main>
             <!-- 底部区域 -->
             <el-footer style="height: 30px;">neusoft ©2024</el-footer>

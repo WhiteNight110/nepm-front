@@ -12,21 +12,33 @@
 </template>
 <script setup>
 	import { ref,onMounted } from 'vue';
+	import { aqiLevelCount } from '@/api/data';
 	//  按需引入 echarts
 	import * as echarts from "echarts";
 	const aqiCount = ref([
-		{ aqiLevel: '1', aqiDescribtion: '优', aqiCount: '1' },
-		{ aqiLevel: '2', aqiDescribtion: '良', aqiCount: '2' },
-		{ aqiLevel: '3', aqiDescribtion: '轻度污染', aqiCount: '1' },
-		{ aqiLevel: '4', aqiDescribtion: '中度污染', aqiCount: '2' },
-		{ aqiLevel: '5', aqiDescribtion: '重度污染', aqiCount: '1' },
-		{ aqiLevel: '6', aqiDescribtion: '严重污染', aqiCount: '2' },
+		{ aqiLevel: '1', aqiDescribtion: '优', aqiCount: '0' },
+		{ aqiLevel: '2', aqiDescribtion: '良', aqiCount: '0' },
+		{ aqiLevel: '3', aqiDescribtion: '轻度污染', aqiCount: '0' },
+		{ aqiLevel: '4', aqiDescribtion: '中度污染', aqiCount: '0' },
+		{ aqiLevel: '5', aqiDescribtion: '重度污染', aqiCount: '0' },
+		{ aqiLevel: '6', aqiDescribtion: '严重污染', aqiCount: '0' },
 	]);
 
-	onMounted(() => {
-		init()
+	onMounted(async() => {
+		//获取数据
+		await aqiLevelCount().then(res => {
+			console.log(res.data.data);
+			res.data.data.map((item, index) => {
+				for(let key in item) {
+					aqiCount.value[key].aqiCount = item[key];
+				}
+			})
+			console.log(aqiCount.value);
+		})
+		initPic()
 	})
-	function init() {
+	function initPic() {
+		
 		// 基于准备好的dom，初始化echarts实例
 		var chartDom = document.getElementById('main');
 		var myChart = echarts.init(chartDom);

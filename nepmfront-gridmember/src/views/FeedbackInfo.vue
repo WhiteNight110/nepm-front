@@ -332,6 +332,7 @@ const submitForm = () => {
       formData.confirmTime = new Date().toLocaleTimeString();
       getAQILevel();
       console.log(formData);
+      saveStatistics(formData);
     }
   } else {
     ElMessage.error("请填写必填字段");

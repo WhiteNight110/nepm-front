@@ -45,19 +45,30 @@
   const getGradeColor = (grade) => {
     // 根据 estimatedGrade 返回对应的背景色类名
     // 这里可以根据具体需求设定不同的逻辑
-    if (grade == '1') {
+    if (grade == '0') {
       return 'grade-green';
-    } else if (grade == '2') {
+    } else if (grade == '1') {
       return 'grade-blue';
-    } else if (grade == '3') {
-      return 'grade-yellow';
-    } else if (grade == '4') {
+    } else if (grade == '2') {
       return 'grade-orange';
-    } else if (grade == '5') {
+    } else if (grade == '3') {
+      return 'grade-brown';
+    } else if (grade == '4') {
       return 'grade-red';
-    } else {
+    } else if (grade == '5') {
       return 'grade-purple';
+    } else {
+      return 'grade-black';
     }
+    switch (grade) {
+            case '0': return 'lightgreen';
+            case '1': return 'lightblue';
+            case '2': return 'orange';
+            case '3': return 'brown';
+            case '4': return 'red';
+            case '5': return 'purple';
+            default: return 'black';
+        }
   };
   const fetchData = async (data, isRefresh) => {
     const ONCE_LOAD_NUM = 20; // 每次加载的数据量
@@ -138,8 +149,8 @@
   background-color: lightblue;
 }
 
-.grade-yellow {
-  background-color: lightyellow;
+.grade-brown {
+  background-color: brown;
 }
 
 .grade-orange {
@@ -152,5 +163,9 @@
 
 .grade-purple {
   background-color: purple;
+}
+
+.grade-black {
+  background-color: black;
 }
 </style>

@@ -47,8 +47,10 @@
     import router from "@/router";
     import { ElMessage } from "element-plus";
     import { useTokenStore } from "@/stores/token";
+    import { useUserStore } from "@/stores/user";
 
     const tokenStore = useTokenStore();
+    const userStore = useUserStore();
     const codeValue = ref('');
     const loginForm = reactive({
         username: '',
@@ -74,26 +76,7 @@
             if(!valid) return;
             //验证验证码
             var isChecked = false;
-            login(loginForm).then(response => {
-                        console.log("response:",response);
-                        const { data } = response;
-                        if(data.code === 200) {
-                            //登陆成功则记录token并跳转到主页
-                            tokenStore.setToken(data.data);
-                            router.push('/admin');
-                        }else{
-                            //登陆失败则提示错误信息
-                            ElMessage({message: data.message,type: 'error',})
-                        }
-                        }).catch(error => {
-                        console.log(error);
-                        });
-            // checkCaptcha(loginForm).then(response => {
-            //     console.log("response:",response);
-            //     const { data,status } = response;
-            //     if(status === 200) {
-            //         if(data==true){
-            //             login(loginForm).then(response => {
+            // login(loginForm).then(response => {
             //             console.log("response:",response);
             //             const { data } = response;
             //             if(data.code === 200) {
@@ -107,14 +90,34 @@
             //             }).catch(error => {
             //             console.log(error);
             //             });
-            //         }else{
-            //             ElMessage({message: '验证码错误',type: 'error',})
-            //         }
-            //     }else{
-            //         ElMessage({message: data.message,type: 'error',})
-            //         return;
-            //     }
-            // })
+            checkCaptcha(loginForm).then(response => {
+                console.log("response:",response);
+                const { data,status } = response;
+                if(status === 200) {
+                    if(data==true){
+                        login(loginForm).then(response => {
+                        console.log("response:",response);
+                        const { data } = response;
+                        if(data.code === 200) {
+                            //登陆成功则记录token并跳转到主页
+                            tokenStore.setToken(data.data);
+                            userStore.setuserCode(loginForm.username);
+                            router.push('/admin');
+                        }else{
+                            //登陆失败则提示错误信息
+                            ElMessage({message: data.message,type: 'error',})
+                        }
+                        }).catch(error => {
+                        console.log(error);
+                        });
+                    }else{
+                        ElMessage({message: '验证码错误',type: 'error',})
+                    }
+                }else{
+                    ElMessage({message: data.message,type: 'error',})
+                    return;
+                }
+            })
         });
     };
 

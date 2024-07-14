@@ -5,8 +5,7 @@ export function getFeedbackList(data) {
     return request({
         url: 'aqiFeedback/listAqiFeedbackPage',
         method: 'post',
-        data,
-        withCredentials: false
+        data
     })
 }
 
@@ -14,15 +13,14 @@ export function getGridMemberList(data) {
     return request({
         url: 'gridMember/listGridMemberByCityId',
         method: 'get',
-        params: data,
-        withCredentials: false
+        params: data
     })
 }
 
 export function getListStatisticsPage(data) {
     return request({
         url: 'statistics/listStatisticsPage',
-        method: 'get',
+        method: 'post',
         data,
         withCredentials: false
     })
@@ -40,9 +38,32 @@ export function assignAqiFeedback(data) {
     })
 }
 
-export function totalCount() {
+export function otherDataCount() {
     return request({
         url: 'statistics/totalCount',
+        method: 'get',
+        withCredentials: false
+    })
+}
+
+export function provincialGrouping() {
+    return request({
+        url: 'statistics/listProvinceItemTotalStatis',
+        method: 'get',
+        withCredentials: false
+    })
+}
+
+export function aqiLevelCount() {
+    return request({
+        url: 'statistics/statisticsDistribution',
+        method: 'get',
+        withCredentials: false
+    })
+}
+export function countByMonth() {
+    return request({
+        url: 'statistics/aqiLevelByMonth',
         method: 'get',
         withCredentials: false
     })

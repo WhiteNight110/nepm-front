@@ -6,7 +6,7 @@ import { useTokenStore } from "@/stores/token";
 
 const request = axios.create({
     // baseURL: 'http://10.1.232.79:8080/nepm/',
-    baseURL: 'http://localhost:8080/nepm/',
+    baseURL: 'http://localhost:8000/',
     timeout: 10000,
 });
 

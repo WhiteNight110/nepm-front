@@ -133,7 +133,7 @@ import { ElMessage } from 'element-plus';
         }
         let data = {
             afId: selectItem.value.afId,
-            gmId: selectItem.value.gmId
+            gmId: selectGridMember.value
         }
         console.log(data)
         //指派任务
@@ -144,6 +144,7 @@ import { ElMessage } from 'element-plus';
                 type: 'success'
             });
             dialogVisible.value = false;
+            selectGridMember.value = '';
             query({})
         })
     }
@@ -228,6 +229,10 @@ import { ElMessage } from 'element-plus';
         console.log(data)
         query(data)
     }
+    const handleClose = (done) => {
+        selectGridMember.value = ''
+        done()
+    }
 </script>
 <template>
     <el-card class="page-container">
@@ -306,7 +311,7 @@ import { ElMessage } from 'element-plus';
             </template>
         </el-table>
         <!--详情和指派弹窗-->
-        <el-dialog v-model="dialogVisible">
+        <el-dialog v-model="dialogVisible" :before-close="handleClose">
             <el-descriptions
                 :title=dialogTitle
                 :column="1"
@@ -476,8 +481,7 @@ import { ElMessage } from 'element-plus';
     margin-bottom: 0px;
 }
 .button-item{
-    position: absolute;
-    right: 20px;
+    margin-left: 80px;
 }
 .info-tag{
     margin-right: 10px;

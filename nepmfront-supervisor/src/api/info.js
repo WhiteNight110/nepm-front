@@ -13,3 +13,14 @@ export function updateInfo(data) {
         withCredentials: false
     })
 }
+
+export function getInfo() {
+    return request({
+        url: 'supervisor/getSupervisorById',
+        method: 'get',
+        params: {
+            telId: useGlobalStore().telId
+        },
+        withCredentials: false
+    })
+}

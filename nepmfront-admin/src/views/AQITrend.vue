@@ -14,6 +14,7 @@
 	import { ref,onMounted } from 'vue';
 	//  按需引入 echarts
 	import * as echarts from "echarts";
+	import { countByMonth } from '@/api/data';
 	const aqiCount = ref([
 		{ index: '1', month: '2022-10', aqiCount: '3' },
 		{ index: '2', month: '2022-11', aqiCount: '11' },
@@ -30,7 +31,18 @@
 		
 	]);
 
-	onMounted(() => {
+	onMounted(async() => {
+		//获取数据
+		await countByMonth().then(res => {
+			console.log(res.data.data);
+			res.data.data.map((item, index) => {
+				for(let key in item) {
+					aqiCount.value[index].month = key;
+					aqiCount.value[index].aqiCount = item[key];
+				}
+			})
+			console.log(aqiCount.value);
+		})
 		init()
 	})
 	function init() {
