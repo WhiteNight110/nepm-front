@@ -102,7 +102,7 @@
                   prefix-icon="Key"
                   v-model="emailLoginForm.emailCode"
                 >
-                <template #append>
+                  <template #append>
                     <div v-if="emailMessageCodeVis" class="second-text">
                       {{ emailCountdown }}秒后重新获取
                     </div>
@@ -127,10 +127,17 @@
     </div>
   </div>
 </template>
+
 <script setup>
 import { reactive, ref } from "vue";
 import { User, Lock, Message, Iphone, Key } from "@element-plus/icons-vue";
-import { passwordFormlogin, phoneFormlogin, emailFormlogin } from "@/api/login";
+import {
+  passwordFormlogin,
+  phoneFormlogin,
+  emailFormlogin,
+  sendPhoneFormCode,
+  sendEmailFormCode,
+} from "@/api/login";
 import { ElMessage } from "element-plus";
 import { useTokenStore } from "@/stores/token";
 import { useAqiFeedbackListStore } from "@/stores/aqiFeedbackList";
@@ -175,7 +182,7 @@ const emailLoginFormRules = {
   email: [
     { required: true, message: "请输入邮箱", trigger: "blur" },
     {
-      type: 'email',
+      type: "email",
       message: "请输入有效的邮箱地址",
       trigger: "blur",
     },
@@ -193,7 +200,7 @@ let phoneCountdown = ref(0);
 const emailMessageCodeVis = ref(false);
 let emailCountdown = ref(0);
 
-const sendPhoneCode = async() => {
+const sendPhoneCode = async () => {
   const reg = /^1[3456789]\d{9}$/;
   if (!reg.test(phoneLoginForm.gmCode)) {
     ElMessage.error("请输入有效的手机号");
@@ -204,12 +211,8 @@ const sendPhoneCode = async() => {
     return;
   }
   try {
-    // 查询数据库是否存在该手机号       该部分还未实现
-    const response = await axios.get(`/api/check-phone/${phoneLoginForm.gmCode}`);
-    if (response.data.exists) {
-      ElMessage.error("该手机号已经注册过了");
-      return;
-    }
+    // 这里需要实现发送验证码的逻辑,可以调用后端接口发送验证码
+    await sendPhoneFormCode(phoneLoginForm.gmCode);
 
     phoneCountdown.value = 60;
     phoneMessageCodeVis.value = true;
@@ -220,7 +223,7 @@ const sendPhoneCode = async() => {
   }
 };
 
-const sendEmailCode = async() => {
+const sendEmailCode = async () => {
   const reg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!reg.test(emailLoginForm.email)) {
     ElMessage.error("请输入有效的邮箱地址");
@@ -231,12 +234,9 @@ const sendEmailCode = async() => {
     return;
   }
   try {
-    // 查询数据库是否存在该邮箱   该部分还未实现
-    const response = await axios.get(`/api/check-email/${emailLoginForm.email}`);
-    if (response.data.exists) {
-      ElMessage.error("该邮箱已经注册过了");
-      return;
-    }
+    // 这里需要实现发送验证码的逻辑,可以调用后端接口发送验证码
+    await sendEmailFormCode(phoneLoginForm.email);
+
     emailCountdown.value = 60;
     emailMessageCodeVis.value = true;
     startEmailCountdown();
@@ -348,7 +348,7 @@ const emailLogin = () => {
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-  height: 100vh;
+  height: 100%;
   width: 100%;
   overflow: hidden;
 }

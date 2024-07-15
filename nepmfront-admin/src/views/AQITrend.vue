@@ -28,7 +28,6 @@
 		{ index: '10', month: '2023-07', aqiCount: '14' },
 		{ index: '11', month: '2023-08', aqiCount: '9' },
 		{ index: '12', month: '2023-09', aqiCount: '6' }
-		
 	]);
 
 	onMounted(async() => {

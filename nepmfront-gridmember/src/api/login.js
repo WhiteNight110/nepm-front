@@ -12,13 +12,34 @@ export function passwordFormlogin(data) {
     })
 }
 
+export function sendPhoneFormCode(data) {
+    return request({
+        url: 'gridMember/sendPhoneFormCode',
+        method: 'post',
+        data: {
+            gmCode: data.gmCode
+        },
+        withCredentials: false
+    })
+}
+
+export function sendEmailFormCode(data) {
+    return request({
+        url: 'gridMember/sendEmailFormCode',
+        method: 'post',
+        data: {
+            email: data.email,
+        },
+        withCredentials: false
+    })
+}
+
 export function phoneFormlogin(data) {
     return request({
-        url: 'gridMember/getGridMemberByCodeByPass',
+        url: 'gridMember/getGridMemberByPhone',
         method: 'post',
         data: {
             gmCode: data.gmCode,
-            password: data.password
         },
         withCredentials: false
     })
@@ -26,11 +47,10 @@ export function phoneFormlogin(data) {
 
 export function emailFormlogin(data) {
     return request({
-        url: 'gridMember/getGridMemberByCodeByPass',
+        url: 'gridMember/getGridMemberByEmail',
         method: 'post',
         data: {
-            gmCode: data.gmCode,
-            password: data.password
+            email: data.email,
         },
         withCredentials: false
     })
