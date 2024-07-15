@@ -10,7 +10,9 @@ import { useUserStore } from '@/stores/user';
 const route = useRoute()
 const username = ref('')
 const pathList = ref()
-
+const fileInputRef = ref(null);
+const avatarUrl = ref('https://avatars.githubusercontent.com/u/37282000?v=4')
+const previewAvatarUrl = ref(avatarUrl.value);
 onMounted(() => {
   username.value = useUserStore().userCode
   getCurrentPath()
@@ -32,19 +34,41 @@ const isRouteMatched = computed(() => {
   const matchedRoutes = ['/data/publicSupervisor', '/data/requiredAQI', '/count/provincialGrouping', '/count/aqiExponential', '/count/aqiTrend', '/count/otherData']
   return matchedRoutes.includes(route.path)
 })
-const handleCommand = (command) => {
+const handleCommand = async (command) => {
   switch (command) {
-    // case 'avatar':
-    //   console.log('更换头像')
-    //   break
-    // case 'password':
-    //   console.log('重置密码')
-    //   break
+    case 'avatar':        
+        const files = await window.showOpenFilePicker({
+            types: [{
+                description: 'Images',
+                accept: {
+                    'image/*': ['.png', '.gif', '.jpeg', '.jpg', '.webp']
+                }
+            }],
+            multiple: false
+        });
+        if (!files || files.length === 0) {
+          console.error('请选择要上传的文件');
+          return;
+        }
+
+        const fileHandle = files[0];
+        const file = await fileHandle.getFile();
+        console.log('选中文件:', file);
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          previewAvatarUrl.value = e.target.result;
+          avatarUrl.value = previewAvatarUrl.value;
+        };
+        reader.readAsDataURL(file);
+
+        
+        break
     case 'logout':
-      router.push('/login')
-      useTokenStore().removeToken()
-      useUserStore().removeuserCode()
-      break
+        router.push('/login')
+        useTokenStore().removeToken()
+        useUserStore().removeuserCode()
+        break
   }
 }
 </script>
@@ -95,12 +119,6 @@ const handleCommand = (command) => {
         <el-container style="background-color: #f0f0f0;">
             <!-- 头部区域 -->
             <el-header class="header">
-              <!-- <el-breadcrumb :separator-icon="ArrowRight" style="margin-bottom: 10px;" class="index">
-                <el-breadcrumb-item :to="{ path: '/' }">homepage</el-breadcrumb-item>
-                <el-breadcrumb-item>公众监督数据管理</el-breadcrumb-item>
-                <el-breadcrumb-item>公众监督数据列表</el-breadcrumb-item>
-              </el-breadcrumb> -->
-
               <!-- 面包屑 -->
               <el-breadcrumb :separator-icon="ArrowRight" style="margin-bottom: 10px;" class="breadcrumb">
                 <el-breadcrumb-item :to="item.path" v-for="item in pathList" :key="item.id">{{ item.meta.title }}</el-breadcrumb-item>
@@ -110,7 +128,7 @@ const handleCommand = (command) => {
                 <div class="user-text">用户：<strong>{{ username }}</strong></div>
                 <el-dropdown placement="bottom-end" class="dropdown-right">
                     <span class="el-dropdown__box">
-                        <el-avatar :src="avatar" />
+                        <el-avatar :src="avatarUrl" />
                         <el-icon>
                             <CaretBottom />
                         </el-icon>
@@ -118,8 +136,7 @@ const handleCommand = (command) => {
                     <template #dropdown >
                         <el-dropdown @command="handleCommand">
                             <el-dropdown-menu >
-                                <!-- <el-dropdown-item command="avatar">更换头像</el-dropdown-item>
-                                <el-dropdown-item command="password">重置密码</el-dropdown-item> -->
+                                <el-dropdown-item command="avatar">更换头像</el-dropdown-item>
                                 <el-dropdown-item command="logout">退出登录</el-dropdown-item>
                             </el-dropdown-menu>
                         </el-dropdown>
@@ -232,7 +249,7 @@ const handleCommand = (command) => {
 .background-image{
     position: absolute;
     top: 50%;
-    left: 50%;
+    left: 57%;
     transform: translate(-50%, -50%);
     width: 50%;
     height: 50%;

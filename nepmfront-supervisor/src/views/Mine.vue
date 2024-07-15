@@ -21,17 +21,17 @@
         :confirm-btn="confirmBtn"
         @confirm="onAvatarConfirm"
         @cancel="onAvatarCancel">
-        <t-upload
-          v-model="files"
-          :multiple="false"
-          :max="1"
-          :size-limit="{ size: 3000000, unit: 'B' }"
-          accept="image/png"
-          action="//service-bv448zsw-1257786608.gz.apigw.tencentcs.com/api/upload-demo"
-          @validate="onValidate"
-          @success="onUploadSuccess"
-        >
-        </t-upload>
+        <t-avatar shape="circle" :image="previewAvatarUrl" class="dialog-avatar" />
+        <el-upload
+            class="upload-demo"
+            drag
+            action="#"
+            :on-change="onFileChange"
+            :show-file-list="false">
+            <i class="el-icon-upload"></i>
+            <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+            <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
+          </el-upload>
       </t-dialog>
       <t-dialog
         v-model:visible="isShowDialogName"
@@ -78,6 +78,7 @@
   import { ElMessage } from 'element-plus';
 
   const avatarUrl = ref('https://avatars.githubusercontent.com/u/37282000?v=4');
+  const previewAvatarUrl = ref(avatarUrl.value);
   const chevronRightIcon = () => h(ChevronRightIcon);
   const name = ref('张三');
   const sex = ref('男');
@@ -99,6 +100,15 @@
     })
 
   });
+  const onFileChange = (file) => {
+    if (file.raw) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        previewAvatarUrl.value = e.target.result;
+      };
+      reader.readAsDataURL(file.raw);
+    }
+  };
   const confirmBtn = {
     content: '确认',
     variant: 'text',
@@ -108,6 +118,14 @@
     content: '取消',
     variant: 'text',
     size: 'large',
+  };
+  const onAvatarConfirm = () => {
+    avatarUrl.value = previewAvatarUrl.value;
+    isShowDialogAvatar.value = false;
+  };
+
+  const onAvatarCancel = () => {
+    isShowDialogAvatar.value = false;
   };
   const onNameConfirm = () => {
     name.value = nameInput.value;
@@ -153,6 +171,13 @@
   width: 100%;
   height: 100%;
   display: relative;
+}
+.dialog-avatar {
+  margin: 0 auto;
+  margin: 2vh 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .avatar{
   margin: 0 auto;
