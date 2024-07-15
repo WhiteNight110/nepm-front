@@ -4,9 +4,10 @@
     <el-col :span="24" style="text-align: center">
       <img src="../assets/bg.png" alt="bg" class="img-bg" />
     </el-col>
+    <img src="../assets/logo.png" class="img-logo" />
     <div>
       <el-row>
-        <el-col :span="24" style="text-align: center" >
+        <el-col :span="24" style="text-align: center; margin-top: 10vh;" >
           <h1 class="title">东软环保公众监督平台</h1>
           <div class="subtitle">
             <span class="line"></span>
@@ -94,11 +95,18 @@ const register = () => {
   width: 100vw;
   border-radius: 0 0 50% 50% / 0 0 20% 20%;;
 }
+.img-logo{
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 33vh;
+  width:20vw;
+}
 .login-body {
   position: absolute;
   width: 100%;
   bottom: 0;
-  top: 50vh;
+  top: 55vh;
 }
 .login-panel{
   

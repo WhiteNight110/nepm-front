@@ -7,6 +7,7 @@
           style="width: 100%; font-size: large;"
           max-height="85vh"
           :row-class-name="tableRowClassName"
+          @row-click="handleRowClick"
         >
           <el-table-column prop="estimatedGrade" width="40px" style="font-size: 20px;">
             <template v-slot:default="scope">
@@ -31,7 +32,15 @@
           </el-table-column>
         </el-table>
       </t-pull-down-refresh>
+      <t-dialog
+        v-model:visible="isShowDialog"
+        :close-on-overlay-click="false"
+        confirm-btn="确定"
+        @confirm="onDialogConfirm"
+      >
+        <t-result :theme="dialogTheme" :title="dialogTitle" :description="dialogDescription" class="dialog-result" />
       
+      </t-dialog>
     </div>
   </template>
 <script setup>
@@ -42,6 +51,19 @@
 
   const MAX_DATA_LEN = 60;
   const globalStore = useGlobalStore();
+  const listPull = ref([]);// 列表数据
+  const loading = ref('');// 加载状态
+  const refreshing = ref(false);// 刷新状态
+  const isShowDialog = ref(false);
+  const dialogTheme = ref('');
+  const dialogTitle = ref('');
+  const dialogDescription = ref('');
+  const resultList = [
+    {description: '该反馈尚未被指派', theme: 'error'},
+    {description: '该反馈正在核验中', theme: 'default'},
+    {description: '该反馈已被检测', theme: 'success'},
+  ];
+  const texts = ref(['优', '良', '轻度污染','中度污染','重度污染','严重污染']);
   const getGradeColor = (grade) => {
     // 根据 estimatedGrade 返回对应的背景色类名
     // 这里可以根据具体需求设定不同的逻辑
@@ -60,15 +82,6 @@
     } else {
       return 'grade-black';
     }
-    switch (grade) {
-            case '0': return 'lightgreen';
-            case '1': return 'lightblue';
-            case '2': return 'orange';
-            case '3': return 'brown';
-            case '4': return 'red';
-            case '5': return 'purple';
-            default: return 'black';
-        }
   };
   const fetchData = async (data, isRefresh) => {
     const ONCE_LOAD_NUM = 20; // 每次加载的数据量
@@ -87,10 +100,6 @@
       console.error('Error fetching data:', error);
     }
   };
-
-  const listPull = ref([]);// 列表数据
-  const loading = ref('');// 加载状态
-  const refreshing = ref(false);// 刷新状态
   // 加载数据函数
   const onLoadPull = (isRefresh = false) => {
     if ((listPull.value.length >= MAX_DATA_LEN && !isRefresh) || loading.value) {
@@ -102,17 +111,34 @@
       refreshing.value = false;
     });
   };
-
   // 刷新事件处理函数
   const onRefresh = () => {
     refreshing.value = true;
     onLoadPull(true);
   };
-
   onMounted(() => {
     onLoadPull();
   });
 
+  const handleRowClick = (row) => {
+    console.log('row:', row);
+    isShowDialog.value = true;
+    if(row.state==0){
+      dialogTheme.value = resultList[0].theme;
+      dialogTitle.value = resultList[0].description;
+    }else if(row.state==1){
+      dialogTheme.value = resultList[1].theme;
+      dialogTitle.value = resultList[1].description;
+    }else{
+      dialogTheme.value = resultList[2].theme;
+      dialogTitle.value = resultList[2].description;
+      dialogDescription.value = '检测结果：'+ texts.value[row.estimatedGrade];
+    }
+  };
+  const onDialogConfirm = () => {
+    dialogDescription.value = '';
+    isShowDialog.value = false;
+  };
   
 </script>
 <style scoped>
