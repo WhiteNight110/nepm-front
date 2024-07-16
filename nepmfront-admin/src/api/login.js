@@ -3,8 +3,8 @@ import request from "@/utils/request";
 export function login(data) {
     return request({
         url: 'admins/getAdminsByCode',
-        method: 'post',
-        data: {
+        method: 'get',
+        params: {
             adminCode: data.username,
             password: data.password
         },
@@ -24,7 +24,7 @@ export function register(data) {
     })
 }
 
-export function getCaptcha(data) {
+export function getCaptcha() {
     return request({
         url: 'captcha/getCaptcha?t='+new Date().getTime(),
         method: 'get',

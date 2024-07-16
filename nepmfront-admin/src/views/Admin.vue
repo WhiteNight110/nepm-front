@@ -10,7 +10,6 @@ import { useUserStore } from '@/stores/user';
 const route = useRoute()
 const username = ref('')
 const pathList = ref()
-const fileInputRef = ref(null);
 const avatarUrl = ref('https://avatars.githubusercontent.com/u/37282000?v=4')
 const previewAvatarUrl = ref(avatarUrl.value);
 onMounted(() => {

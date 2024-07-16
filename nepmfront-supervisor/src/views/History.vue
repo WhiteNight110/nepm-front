@@ -67,18 +67,18 @@
   const getGradeColor = (grade) => {
     // 根据 estimatedGrade 返回对应的背景色类名
     // 这里可以根据具体需求设定不同的逻辑
-    if (grade == '0') {
-      return 'grade-green';
-    } else if (grade == '1') {
-      return 'grade-blue';
+    if (grade == '1') {
+      return 'grade-1';
     } else if (grade == '2') {
-      return 'grade-orange';
+      return 'grade-2';
     } else if (grade == '3') {
-      return 'grade-brown';
+      return 'grade-3';
     } else if (grade == '4') {
-      return 'grade-red';
+      return 'grade-4';
     } else if (grade == '5') {
-      return 'grade-purple';
+      return 'grade-5';
+    } else if (grade == '6') {
+      return 'grade-6';
     } else {
       return 'grade-black';
     }
@@ -167,28 +167,28 @@
   color: white; /* 字体颜色设为白色 */
 }
 
-.grade-green {
-  background-color: lightgreen;
+.grade-1 {
+  background-color: rgb(0, 228, 0);
 }
 
-.grade-blue {
-  background-color: lightblue;
+.grade-2 {
+  background-color: rgb(255, 255, 0);
 }
 
-.grade-brown {
-  background-color: brown;
+.grade-3 {
+  background-color: rgb(255, 126, 0);
 }
 
-.grade-orange {
-  background-color: orange;
+.grade-4 {
+  background-color: rgb(255, 0, 0);
 }
 
-.grade-red {
-  background-color: red;
+.grade-5 {
+  background-color: rgb(153, 0, 76);
 }
 
-.grade-purple {
-  background-color: purple;
+.grade-6 {
+  background-color: rgb(126, 0, 35);
 }
 
 .grade-black {

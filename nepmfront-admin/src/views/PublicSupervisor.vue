@@ -188,12 +188,12 @@ import { ElMessage } from 'element-plus';
     };
     const getAqiLevelColor = (level) => {
         switch (level) {
-            case 0: return 'lightgreen';
-            case 1: return 'lightblue';
-            case 2: return 'orange';
-            case 3: return 'brown';
-            case 4: return 'red';
-            case 5: return 'purple';
+            case 0: return 'rgb(0, 228, 0)';
+            case 1: return 'rgb(255, 220, 0)';
+            case 2: return 'rgb(255, 126, 0)';
+            case 3: return 'rgb(255, 0, 0)';
+            case 4: return 'rgb(153, 0, 76)';
+            case 5: return 'rgb(126, 0, 35)';
             default: return 'black';
         }
     }
@@ -251,7 +251,7 @@ import { ElMessage } from 'element-plus';
                     </el-form-item>
                     <el-form-item class="flex-item" label="预估等级">
                             <el-select v-model="queryForm.estimatedGrade" clearable placeholder="全部" style="width: 180px">
-                                <el-option v-for="(item,index) in aqiLevelOptions" :key="index" :label="item" :value="index" />
+                                <el-option v-for="(item,index) in aqiLevelOptions" :key="index" :label="item" :value="index+1" />
                             </el-select>
                     </el-form-item>
                     <el-form-item class="flex-item" label="反馈日期">
@@ -291,7 +291,7 @@ import { ElMessage } from 'element-plus';
             </el-table-column>
             <el-table-column label="预估污染等级" align="center">
                 <template v-slot:default="scope">
-                    <span :style="{ color: getAqiLevelColor(scope.row.estimatedGrade) }">{{ aqiLevelOptions[scope.row.estimatedGrade] }}</span>
+                    <span :style="{ color: getAqiLevelColor(scope.row.estimatedGrade-1) }">{{ aqiLevelOptions[scope.row.estimatedGrade-1] }}</span>
                 </template>
             </el-table-column>
             <el-table-column label="反馈日期" prop="afDate" align="center">
