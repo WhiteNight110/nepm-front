@@ -1,11 +1,12 @@
 <template>
   <div class="wrapper">
-    <div class="app-bar">
-      <span class="icon-wrapper" @click="handleIconClick">
-        <el-icon><ArrowLeft /></el-icon>
-      </span>
-    </div>
-    <el-card class="show-data" v-if="listPull" :data="listPull">
+    <t-navbar
+      title="反馈任务详细信息"
+      :fixed="false"
+      left-arrow
+      @left-click="handleClick"
+    />
+    <div class="show-data" v-if="listPull" :data="listPull">
       <div class="part1">
         <div class="left">
           <div class="estimatedGrade">
@@ -42,15 +43,18 @@
           <el-icon><User /></el-icon>
           <div class="detail">
             <div>{{ listPull.supervisor.realName }}</div>
-            <div>{{ listPull.supervisor.telId }}</div>
           </div>
+        </div>
+        <div class="phone">
+          <el-icon><Iphone /></el-icon>
+          <div>{{ listPull.supervisor.telId }}</div>
         </div>
         <div class="information">
           <el-icon><Document /></el-icon>
           <div>{{ listPull.information }}</div>
         </div>
       </div>
-    </el-card>
+    </div>
     <!-- 实测浓度 -->
     <el-card class="measured-data">
       <el-form :model="formData" :rules="rules" ref="form">
@@ -118,17 +122,15 @@
             { 'form-complete': isFormComplete },
           ]"
         >
-          <!-- 实测AQI等级 -->
           <span>
             实测AQI等级：{{ formData.aqiLevel }}
             {{ getAQIGradeDescription(formData.aqiLevel) }}
           </span>
         </el-form-item>
         <el-form-item>
-          <!-- 提交按钮 -->
           <el-button
             type="primary"
-            @click="submitForm(form)"
+            @click="dialogVisible = true"
             style="width: 50%"
           >
             提交实测数据
@@ -136,20 +138,53 @@
         </el-form-item>
       </el-form>
     </el-card>
+    <el-dialog v-model="dialogVisible" title="提示" :before-close="handleClose">
+      <span>是否确认提交反馈信息</span>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="dialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="submitForm"> 确认 </el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ArrowLeft, User, Document, Location } from "@element-plus/icons-vue";
+import { Iphone, User, Document, Location } from "@element-plus/icons-vue";
 import { reactive, ref, onMounted, computed, watch } from "vue";
-import { aqiFeedback, saveStatistics } from "@/api/aqiFeedback";
+import { aqiFeedback, commitAqiFeedback, saveStatistics } from "@/api/aqiFeedback";
 import { useAqiFeedbackStore } from "@/stores/aqiFeedback";
 import { codeToText } from "element-china-area-data";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 import router from "@/router";
 import MyMap from "@/components/map.vue";
 
 const aqiFeedbackStore = useAqiFeedbackStore();
+
+const dialogVisible = ref(false);
+
+const handleClose = (done) => {
+  ElMessageBox.confirm(
+    '是否确认关闭当前对话框?',
+    '提示',
+    {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      type: 'warning',
+    }
+  )
+    .then(() => {
+      done()
+    })
+    .catch(() => {
+      // catch error
+    })
+}
+
+const handleClick = (value) => {
+  router.push("/feedbackList");
+};
 
 components: {
   MyMap;
@@ -174,9 +209,9 @@ const formData = reactive({
 });
 
 const rules = {
-  so2Value: [{ required: true, message: "请输入SO2浓度", trigger: "blur" }],
-  coValue: [{ required: true, message: "请输入CO浓度", trigger: "blur" }],
-  spmValue: [{ required: true, message: "请输入PM2.5浓度", trigger: "blur" }],
+  so2Value: [{ required: true, message: "", trigger: "blur" }],
+  coValue: [{ required: true, message: "", trigger: "blur" }],
+  spmValue: [{ required: true, message: "", trigger: "blur" }],
 };
 
 const handleIconClick = () => {
@@ -319,6 +354,7 @@ const submitForm = () => {
     ) {
       // 提交表单
       if (listPull.value) {
+        formData.afId = aqiFeedbackStore.afId;
         formData.gmId = listPull.value.gmId;
         formData.provinceId = listPull.value.provinceId;
         formData.cityId = listPull.value.cityId;
@@ -332,7 +368,9 @@ const submitForm = () => {
       formData.confirmTime = new Date().toLocaleTimeString();
       getAQILevel();
       console.log(formData);
+      commitAqiFeedback(aqiFeedbackStore.afId);
       saveStatistics(formData);
+      router.push("/feedbackList");
     }
   } else {
     ElMessage.error("请填写必填字段");
@@ -356,31 +394,10 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.wrapper {
-  background-color: white;
-}
-
-.app-bar {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  height: 8vh;
-}
-
-.icon-wrapper {
-  cursor: pointer;
-  margin-left: 50px;
-}
-
-.el-icon {
-  font-size: 70px;
-}
-
 .show-data {
   display: block;
   width: 80vw;
-  height: 35vh;
-  background-color: rgba(255, 255, 255, 0.4);
+  height: 40vh;
   border-radius: 25px;
   position: absolute;
   top: 30%;
@@ -404,15 +421,17 @@ onMounted(() => {
   height: 8vh;
   display: flex;
   align-items: center;
-  font-size: 40px;
+  font-size: 20px;
 }
 
 .address {
-  font-size: 60px;
+  margin-top: 20px;
+  font-size: 15px;
 }
 
 .grid {
-  font-size: 40px;
+  margin-top: 20px;
+  font-size: 15px;
 }
 
 .right {
@@ -423,59 +442,52 @@ onMounted(() => {
   justify-content: center;
 }
 
-.map {
-  width: 300px;
-  height: 300px;
-  overflow: hidden;
-}
-
 .part2 {
   display: flex;
-  height: 10vh;
+  height: 15vh;
 }
 
 .supervisor {
   width: 40vw;
   display: flex;
-  font-size: 50px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.phone {
+  width: 40vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
 }
 
 .information {
   width: 40vw;
   display: flex;
-  font-size: 50px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.el-button {
+  margin-top: 10px;
 }
 
 .measured-data {
   display: block;
-  width: 80vw;
-  height: 35vh;
+  width: 90vw;
+  height: 45vh;
   background-color: rgba(255, 255, 255, 0.4);
   border-radius: 25px;
   position: absolute;
-  top: 70%;
+  top: 75%;
   left: 50%;
   transform: translate(-50%, -50%);
-  padding: 20px;
-}
-
-.el-form-item {
-  display: flex;
-  --font-size: 35px;
-  margin-top: 5%;
-}
-
-:deep(.el-form-item__error) {
-  font-size: xx-large;
-}
-
-.el-input {
-  box-sizing: border-box;
-  color: var(--el-input-text-color, var(--el-text-color-regular));
-  flex-grow: 1;
-  font-size: xx-large;
-  height: var(--el-input-inner-height);
-  line-height: var(--el-input-inner-height);
 }
 
 :deep(.el-form-item__content) {
@@ -484,8 +496,6 @@ onMounted(() => {
   display: flex;
   flex: 1;
   flex-wrap: wrap;
-  font-size: var(--font-size);
-  line-height: 32px;
   min-width: 0;
   position: relative;
 }
@@ -493,9 +503,7 @@ onMounted(() => {
 .flex-row {
   display: flex;
   align-items: center;
-  height: 5rem;
   width: 100%;
-  --font-size: 35px;
 }
 
 .flex-row span,
@@ -504,24 +512,14 @@ onMounted(() => {
   flex: 1;
 }
 
-.AQIlabel {
-  width: 100%;
-  height: 50px;
-}
-
-.el-button {
-  height: 50px;
-  font-size: xx-large;
-}
-
 .measuredGrade-block {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 65px;
-  height: 65px;
-  border-radius: 15px;
-  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  font-size: 20px;
   font-weight: bold;
   color: white;
 }

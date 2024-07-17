@@ -4,8 +4,8 @@ import { ref } from "vue";
 export const useGuidanceStore = defineStore(
   "guidance",
   () => {
-    // const baseUrl = ref('http://118.202.10.193:8080/nepm/')
-    const baseUrl = ref("http://localhost:8080/nepm/");
+    const baseUrl = ref('http://118.202.10.193:8080/');
+    // const baseUrl = ref("http://localhost:8080/nepm/");
     const startLatitude = ref("");
     const startLongitude = ref("");
     const endLatitude = ref("");

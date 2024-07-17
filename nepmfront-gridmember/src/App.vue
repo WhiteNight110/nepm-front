@@ -1,5 +1,5 @@
 <template>
-    <router-view />
+  <router-view />
 </template>
 
 <script setup>
@@ -9,11 +9,11 @@ import { ElMessage } from "element-plus";
 
 //封装共通消息提示框
 const myElMessage = (message, type) => {
-    ElMessage({
-        message: message,
-        type: type,
-        showClose: true
-    });
+  ElMessage({
+      message: message,
+      type: type,
+      showClose: true
+  });
 };
 
 provide("myElMessage", myElMessage);
@@ -36,25 +36,25 @@ ul,
 ol,
 li,
 p {
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
 }
 
 html,
 body,
 #app {
-    width: 100%;
-    height: 100%;
-    font-family: "微软雅黑";
+  width: 100%;
+  height: 100%;
+  font-family: "微软雅黑";
 }
 
 ul,
 ol {
-    list-style: none;
+  list-style: none;
 }
 
 a {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 </style>
