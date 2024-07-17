@@ -3,8 +3,19 @@ import { useAqiFeedbackListStore } from "@/stores/aqiFeedbackList";
 
 export function aqiFeedback(afId) {
     return request({
-        url: 'aqiFeedback/getAqiFeedbackById',
+        url: 'aqiFeedback/list/'+afId,
         method: 'get',
+        params: {
+            afId,
+        },
+        withCredentials: false
+    })
+}
+
+export function commitAqiFeedback(afId) {
+    return request({
+        url: 'aqiFeedback/confirmAqiFeedback/'+afId,
+        method: 'put',
         params: {
             afId,
         },
@@ -14,9 +25,10 @@ export function aqiFeedback(afId) {
 
 export function saveStatistics(data) {
     return request({
-        url: 'statistics/saveStatistics',
-        method: 'post',
+        url: 'statistics/save',
+        method: 'put',
         data: {
+            afId: data.afId,
             gmId: data.gmId,
             provinceId: data.provinceId,
             cityId: data.cityId,

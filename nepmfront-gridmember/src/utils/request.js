@@ -3,13 +3,11 @@ import { ElLoading, ElMessage } from 'element-plus';
 import router from "@/router";
 import { useTokenStore } from "@/stores/token";
 
-
 const request = axios.create({
-    // baseURL: 'http://10.1.232.79:8080/nepm/',
-    baseURL: 'http://localhost:8000/',
+    baseURL: 'http://10.1.232.119:8000/',
+    // baseURL: 'http://localhost:8080/nepm/',
     timeout: 10000,
 });
-
 
 //请求前拦截
 request.interceptors.request.use(config => {
@@ -19,7 +17,7 @@ request.interceptors.request.use(config => {
         config.headers.Authorization = tokenStore.token
     }else{
         console.log("url=",config.url)
-        if(config.url !== 'gridMember/getGridMemberByCodeByPass'){
+        if(config.url !== 'gridMember/login'){
             console.log("用户认证失败，请重新登录")
             router.push({name: 'Login'});
             return Promise.reject("用户认证失败，请重新登录");
@@ -33,6 +31,7 @@ request.interceptors.request.use(config => {
     });
     return Promise.reject("发送请求失败");
 });
+
 //请求后拦截
 request.interceptors.response.use(response => {
     console.log('请求后拦截，response',response);
@@ -49,6 +48,5 @@ request.interceptors.response.use(response => {
     
     return Promise.reject(error);
 });
-
 
 export default request;

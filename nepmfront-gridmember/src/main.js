@@ -9,6 +9,9 @@ import { createPersistedState } from "pinia-persistedstate-plugin";
 import ElementPlus from "element-plus";
 import * as ElementPlusIconsVue from "@element-plus/icons-vue";
 import "element-plus/theme-chalk/index.css";
+//导入TDesign
+import TDesign from 'tdesign-mobile-vue';
+import 'tdesign-mobile-vue/es/style/index.css';
 //导入封装的axios
 import request from "@/utils/request";
 // 定义特性标志
@@ -23,6 +26,6 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 }
 
 pinia.use(persist);
-app.use(router).use(ElementPlus).use(pinia);
+app.use(router).use(ElementPlus).use(pinia).use(TDesign);
 app.config.globalProperties.Request = request;
 app.mount("#app");
