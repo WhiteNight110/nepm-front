@@ -299,6 +299,17 @@ import { ElMessage } from 'element-plus';
                     </template>
                     {{ selectItem.information }}
                 </el-descriptions-item>
+                <el-descriptions-item>
+                    <template #label>
+                        <div class="cell-item">
+                            <el-icon style="margin: 5px;"><Notebook /></el-icon>
+                            <span class="dialog-text">检测数据(污染等级)</span>
+                        </div>
+                    </template>
+                    <el-tag size="small" class="info-tag">SO2: {{ selectItem.so2Level }}级</el-tag>
+                    <el-tag size="small" class="info-tag">CO: {{ selectItem.coLevel }}级</el-tag>
+                    <el-tag size="small" class="info-tag">PM2.5: {{ selectItem.spmLevel }}级</el-tag>
+                </el-descriptions-item>
                 
             </el-descriptions>
         </el-dialog>

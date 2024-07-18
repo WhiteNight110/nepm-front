@@ -1,21 +1,17 @@
 import request from "@/utils/request";
-
+//登录
 export function login(data) {
     return request({
-        url: 'admins/getAdminsByCode',
+        url: 'admins/login/'+data.username+'/'+data.password,
         method: 'get',
-        params: {
-            adminCode: data.username,
-            password: data.password
-        },
         withCredentials: false
     })
 }
-
+//注册
 export function register(data) {
     return request({
-        url: 'admins/adminsRegister',
-        method: 'post',
+        url: 'admins/register',
+        method: 'put',
         data:{
             adminCode: data.username,
             password: data.password
@@ -23,21 +19,17 @@ export function register(data) {
         withCredentials: false
     })
 }
-
+//获取验证码
 export function getCaptcha() {
     return request({
         url: 'captcha/getCaptcha?t='+new Date().getTime(),
         method: 'get',
     })
 }
-
+//校验验证码
 export function checkCaptcha(data) {
     return request({
-        url: 'captcha/checkCaptcha',
-        method: 'post',
-        params: {
-            captcha: data.checkCode,
-            codeKey: 'user:login:validatecode:'+data.codeKey
-        },
+        url: 'captcha/'+data.checkCode+'/user:login:validatecode:'+data.codeKey,
+        method: 'get',
     })
 }

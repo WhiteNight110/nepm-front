@@ -16,13 +16,13 @@ onMounted(() => {
   username.value = useUserStore().userCode
   getCurrentPath()
 })
-
+// 获取当前路径
 const getCurrentPath = () => {
     console.log('route.matched',route.matched);
     pathList.value = route.matched.filter(item => item.meta && item.meta.title);
     console.log('pathList',pathList.value);
 }
-
+// 监听路由变化
 watch(route, (to, from) => {
     pathList.value = to.matched.filter(item => item.meta && item.meta.title);
     console.log('to',to);
@@ -30,9 +30,12 @@ watch(route, (to, from) => {
     console.log('pathList',pathList.value);
 }, { immediate: true });
 const isRouteMatched = computed(() => {
-  const matchedRoutes = ['/data/publicSupervisor', '/data/requiredAQI', '/count/provincialGrouping', '/count/aqiExponential', '/count/aqiTrend', '/count/otherData']
+  const matchedRoutes = ['/data/publicSupervisor', '/data/requiredAQI',
+   '/count/provincialGrouping', '/count/aqiExponential', '/count/aqiTrend',
+    '/count/otherData']
   return matchedRoutes.includes(route.path)
 })
+
 const handleCommand = async (command) => {
   switch (command) {
     case 'avatar':        
@@ -60,8 +63,6 @@ const handleCommand = async (command) => {
           avatarUrl.value = previewAvatarUrl.value;
         };
         reader.readAsDataURL(file);
-
-        
         break
     case 'logout':
         router.push('/login')

@@ -3,7 +3,7 @@ import { ElLoading, ElMessage } from 'element-plus';
 
 
 const request = axios.create({
-    baseURL: 'http://localhost:8000/',
+    baseURL: 'http://118.202.10.207:8000/',
     timeout: 10000,
 });
 

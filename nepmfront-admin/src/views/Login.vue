@@ -48,7 +48,6 @@
     import { ElMessage } from "element-plus";
     import { useTokenStore } from "@/stores/token";
     import { useUserStore } from "@/stores/user";
-
     const tokenStore = useTokenStore();
     const userStore = useUserStore();
     const codeValue = ref('');
@@ -60,41 +59,25 @@
         checked: false
     });
     const formDataRef = ref(null);
-
     onMounted(() => {
+        //进入登陆页面即获取验证码
         getCaptcha().then(response => {
             console.log("response:",response);
             const { data } = response;
-            loginForm.codeKey = data.codeKey;
-            codeValue.value = data.codeValue;
+            loginForm.codeKey = data.data.codeKey;
+            codeValue.value = data.data.codeValue;
         })
     })
-
+    //提交表单
     const submitForm = () => {
         console.log("loginForm:",loginForm);
         formDataRef.value.validate(async(valid) => {
             if(!valid) return;
-            //验证验证码
-            var isChecked = false;
-            // login(loginForm).then(response => {
-            //             console.log("response:",response);
-            //             const { data } = response;
-            //             if(data.code === 200) {
-            //                 //登陆成功则记录token并跳转到主页
-            //                 tokenStore.setToken(data.data);
-            //                 router.push('/admin');
-            //             }else{
-            //                 //登陆失败则提示错误信息
-            //                 ElMessage({message: data.message,type: 'error',})
-            //             }
-            //             }).catch(error => {
-            //             console.log(error);
-            //             });
             checkCaptcha(loginForm).then(response => {
                 console.log("response:",response);
                 const { data,status } = response;
                 if(status === 200) {
-                    if(data==true){
+                    if(data.data==true){
                         login(loginForm).then(response => {
                         console.log("response:",response);
                         const { data } = response;
@@ -120,7 +103,7 @@
             })
         });
     };
-
+    //更换验证码
     const changeCheckCode = (event) => {
         getCaptcha().then(response => {
             console.log("response:",response);
@@ -129,11 +112,11 @@
             codeValue.value = data.codeValue;
         })
     }
-
+    //注册界面跳转
     const register = () => {
         router.push('/register');
     }
-
+    //表单验证
     const rules = {
         username: [
         { required: true, message: '请输入用户名', trigger: 'blur' }

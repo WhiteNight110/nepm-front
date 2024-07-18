@@ -2,14 +2,11 @@ import axios from "axios";
 import { ElLoading, ElMessage } from 'element-plus';
 import router from "@/router";
 import { useTokenStore } from "@/stores/token";
-
-
+//创建axios实例
 const request = axios.create({
-    //10.1.232.79
-    baseURL: 'http://localhost:8000/',
+    baseURL: 'http://118.202.10.207:8000/',
     timeout: 10000,
 });
-
 
 //请求前拦截
 request.interceptors.request.use(config => {
@@ -19,8 +16,9 @@ request.interceptors.request.use(config => {
         config.headers.Authorization = tokenStore.token
     }else{
         console.log("url=",config.url)
-        if(config.url !== 'admins/getAdminsByCode' && config.url !== 'admins/adminsRegister'
-             && config.url.substring(0,18) !== 'captcha/getCaptcha' && config.url.substring(0,20) !== 'captcha/checkCaptcha'){
+        if(config.url.substring(0,12) !== 'admins/login' && config.url !== 'admins/adminsRegister'
+             && config.url.substring(0,18) !== 'captcha/getCaptcha' 
+             && config.url.substring(0,7) !== 'captcha'){
             console.log("用户认证失败，请重新登录")
             ElMessage({
                 message: '用户认证失败，请重新登录',
@@ -54,6 +52,5 @@ request.interceptors.response.use(response => {
     
     return Promise.reject(error);
 });
-
 
 export default request;

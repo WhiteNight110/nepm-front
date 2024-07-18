@@ -10,7 +10,7 @@ export function otherDataCount() {
 
 export function aqiLevelCount() {
     return request({
-        url: 'statistics/statisticsDistribution',
+        url: 'statistics/aqiDistribution',
         method: 'get',
         withCredentials: false
     })
@@ -19,6 +19,28 @@ export function aqiLevelCount() {
 export function countByMonth() {
     return request({
         url: 'statistics/aqiLevelByMonth',
+        method: 'get',
+        withCredentials: false
+    })
+}
+
+export function so2Count() {
+    return request({
+        url: 'statistics/so2Distribution',
+        method: 'get',
+        withCredentials: false
+    })
+}
+export function coCount() {
+    return request({
+        url: 'statistics/coDistribution',
+        method: 'get',
+        withCredentials: false
+    })
+}
+export function spmCount() {
+    return request({
+        url: 'statistics/spmDistribution',
         method: 'get',
         withCredentials: false
     })

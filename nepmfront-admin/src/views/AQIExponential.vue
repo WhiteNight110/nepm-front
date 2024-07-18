@@ -27,10 +27,10 @@
 	onMounted(async() => {
 		//获取数据
 		await aqiLevelCount().then(res => {
-			console.log(res.data.data);
+			console.log('res:',res.data.data);
 			res.data.data.map((item, index) => {
 				for(let key in item) {
-					aqiCount.value[key].aqiCount = item[key];
+					aqiCount.value[key-1].aqiCount = item[key];
 				}
 			})
 			console.log(aqiCount.value);

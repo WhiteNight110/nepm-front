@@ -10,8 +10,9 @@ import { createPersistedState } from 'pinia-persistedstate-plugin';
 import ElementPlus from 'element-plus';
 import 'element-plus/theme-chalk/index.css';
 
+
+// 引入TDesign组件库
 import TDesign from 'tdesign-mobile-vue';
-// 引入TDesign组件库的少量全局样式变量
 import 'tdesign-mobile-vue/es/style/index.css';
 
 //导入图标

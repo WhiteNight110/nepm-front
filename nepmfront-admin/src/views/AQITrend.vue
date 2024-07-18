@@ -73,13 +73,13 @@
 				type: 'bar',
 				itemStyle: {
 					color: function (params) {
-						if (params.data < 5){
+						if (params.data < 2){
 							return '#b1ff14';
-						} else if (params.data < 10){
+						} else if (params.data < 3){
 							return '#8fd600';
-						} else if	(params.data < 15){
+						} else if	(params.data < 4){
 							return '#f7d600';
-						} else if	(params.data < 20){
+						} else if	(params.data < 5){
 							return '#ff8c00';
 						} else {
 							return '#ff0000';
@@ -88,6 +88,7 @@
 				}
 			}]
 		};
+
 	// 使用刚指定的配置项和数据显示图表。
 	myChart.setOption(option);
 }

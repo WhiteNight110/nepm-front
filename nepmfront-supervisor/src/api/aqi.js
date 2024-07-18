@@ -1,20 +1,17 @@
 import request from "@/utils/request";
 import { useGlobalStore } from "@/stores/globalStore";
-
+//查询反馈列表
 export function aqiFeedbackList(telId) {
     return request({
-        url: 'aqiFeedback/listAqiFeedbackByTelId',
+        url: 'aqiFeedback/'+telId,
         method: 'get',
-        params: {
-            telId,
-        },
         withCredentials: false
     })
 }
-
+//提交反馈
 export function saveAqiFeedback(data) {
     return request({
-        url: 'aqiFeedback/saveAqiFeedback',
+        url: 'aqiFeedback/save',
         method: 'post',
         data: {
             telId: useGlobalStore().telId,

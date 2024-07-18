@@ -35,20 +35,19 @@ const routes = [
     meta:{title:"注册"}
   }
 ]
-
 const router = createRouter({
   history: createWebHashHistory(),
   routes
 })
-
-// router.beforeEach((to, from, next) => {
-//   let tokenStore = useTokenStore();
-//   const token = tokenStore.token;
-//   if (token || to.path === '/login' || to.path === '/register') {
-//       next();
-//   } else {
-//       next({ path: '/login' });
-//   }
-// })
+//设置路由守卫
+router.beforeEach((to, from, next) => {
+  let tokenStore = useTokenStore();
+  const token = tokenStore.token;
+  if (token || to.path === '/login' || to.path === '/register') {
+      next();
+  } else {
+      next({ path: '/login' });
+  }
+})
 
 export default router

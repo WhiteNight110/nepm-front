@@ -205,7 +205,7 @@ import { ElMessage } from 'element-plus';
         queryForm.afDate = ''
         feedbackDate.value = ''
         selectedOptions.value = []
-        radio.value = 0
+        radio.value = 2
         query({})
     }
     //根据查询表单查询
@@ -250,9 +250,11 @@ import { ElMessage } from 'element-plus';
                         </el-cascader>
                     </el-form-item>
                     <el-form-item class="flex-item" label="预估等级">
-                            <el-select v-model="queryForm.estimatedGrade" clearable placeholder="全部" style="width: 180px">
-                                <el-option v-for="(item,index) in aqiLevelOptions" :key="index" :label="item" :value="index+1" />
-                            </el-select>
+                        <el-select v-model="queryForm.estimatedGrade"
+                         clearable placeholder="全部" style="width: 180px">
+                            <el-option v-for="(item,index) in aqiLevelOptions"
+                             :key="index" :label="item" :value="index+1" />
+                        </el-select>
                     </el-form-item>
                     <el-form-item class="flex-item" label="反馈日期">
                         <el-date-picker
@@ -273,7 +275,6 @@ import { ElMessage } from 'element-plus';
                         <el-button type="primary" @click="queryByForm">查询</el-button>
                     </el-form-item>
                 </el-form>
-                
             </div>
         </template>
         <el-table :data="feedbackList" class="table">
@@ -372,7 +373,7 @@ import { ElMessage } from 'element-plus';
                             <span class="dialog-text">预估等级</span>
                         </div>
                     </template>
-                    {{ aqiLevelOptions[selectItem.estimatedGrade] }}
+                    {{ aqiLevelOptions[selectItem.estimatedGrade-1] }}
                 </el-descriptions-item>
                 <el-descriptions-item>
                     <template #label>

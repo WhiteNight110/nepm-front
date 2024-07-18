@@ -41,7 +41,7 @@
                     <div class="module-box" style="width: 100%; height: 200px;">
                         <dv-border-box8 :dur="5" style="height: 200px">
                             <div style="display: inline-flex; margin-top: -34px">
-                                <dv-charts id="chart3" style="width:250px;height:200px; margin-top: 40px" />
+                                <dv-charts id="chart3" style="width:260px;height:200px; margin-top: 40px" />
                             </div>
 
                         </dv-border-box8>
@@ -100,19 +100,19 @@
                 <div class="grid-item" style="flex:0 1 25% ">
                     <div class="module-box" style="width: 100%; height: 200px">
                         <dv-border-box9 style="height: 200px">
-                            <dv-charts :option="option5" style="width:350px;height:230px;" />
+                            <dv-charts id="chart5" style="width:350px;height:230px;top: 10px" />
                         </dv-border-box9>
                     </div>
 
                     <div class="module-box" style="width: 100%; height: 200px;">
                         <dv-border-box8 :dur="5" style="height: 200px">
-                            <dv-charts :option="option6" style="width:350px;height:230px; " />
+                            <dv-charts id="chart6" style="width:350px;height:230px;top: 10px " />
                         </dv-border-box8>
                     </div>
 
                     <div class="module-box" style="width: 100%; height: 250px;">
                         <dv-border-box10>
-                            <dv-charts :option="option7" style="width:350px;height:280px; " />
+                            <dv-charts id="chart7" style="width:350px;height:280px;top: 10px " />
                         </dv-border-box10>
                     </div>
                 </div>
@@ -136,7 +136,7 @@
 import { reactive, onUnmounted, onMounted, ref, nextTick} from 'vue';
 import { changeDefaultConfig } from '@jiaminghi/charts'
 import { styleType } from 'element-plus/es/components/table-v2/src/common';
-import { otherDataCount,aqiLevelCount,countByMonth } from '@/api/data.js';
+import { otherDataCount,aqiLevelCount,countByMonth,so2Count,coCount,spmCount } from '@/api/data.js';
 import * as echarts from '../assets/echarts@5.5.0/echarts.min.js';
 const totalCount = ref(0);
 const goodCount = ref(0);
@@ -163,17 +163,25 @@ const aqiCountByMonth = ref([
 ]);
 const chart4XData = ref([]);
 const chart4YData = ref([]);
+const so2CountData = ref([]);
+const coCountData = ref([]);
+const spmCountData = ref([]);
+const so2CountChartData = ref([]);
+const coCountChartData = ref([]);
+const spmCountChartData = ref([]);
+const level = ['一', '二', '三', '四', '五', '六'];
 const fetchData = async () => {
     await otherDataCount().then(res => {
         totalCount.value = res.data.data.totalCount;
         goodCount.value = res.data.data.goodCount;
     });
+    // 获取空气质量指数级别分布
     await aqiLevelCount().then(res => {
         aqiLvCount.value = Object.keys(res.data.data).map(key => {
             const [aqiDescribtion, aqiCount] = Object.entries(res.data.data[key])[0];
             return {
                 aqiCount: aqiCount,
-                aqiDescribtion: aqiLevel.value[aqiDescribtion]
+                aqiDescribtion: aqiLevel.value[aqiDescribtion-1]
             };
         });
         console.log('aqiLvCount:', aqiLvCount);
@@ -207,6 +215,70 @@ const fetchData = async () => {
     });
     console.log('chart4XData:', chart4XData.value);
     console.log('chart4YData:', chart4YData.value);
+
+    //获取二氧化硫浓度超标累计
+    await so2Count().then(res => {
+        so2CountData.value = Object.keys(res.data.data).map(key => {
+            var [so2Level, so2Count] = Object.entries(res.data.data[key])[0];
+            return {
+                name: level[key],
+                value: so2Count
+            };
+        });
+        console.log('so2Count:', so2CountData);
+        // 补全缺失的项
+        so2CountChartData.value = level.map(name => {
+            // 在原数组中查找是否有该项
+            const found = so2CountData.value.find(item => item.name === name);
+            // 如果找到则返回原项，否则补充一个新项
+            return found ? found : reactive({ name, value: 0 });
+        });
+        // 提取数据
+        so2CountChartData.value = so2CountChartData.value.map(item => item.value);
+        console.log('so2CountChartData:', so2CountChartData);
+    });
+    //获取一氧化碳浓度超标累计
+    await coCount().then(res => {
+        coCountData.value = Object.keys(res.data.data).map(key => {
+            var [coLevel, coCount] = Object.entries(res.data.data[key])[0];
+            return {
+                name: level[key],
+                value: coCount
+            };
+        });
+        console.log('coCount:', coCountData);
+        // 补全缺失的项
+        coCountChartData.value = level.map(name => {
+            // 在原数组中查找是否有该项
+            const found = coCountData.value.find(item => item.name === name);
+            // 如果找到则返回原项，否则补充一个新项
+            return found ? found : reactive({ name, value: 0 });
+        });
+        // 提取数据
+        coCountChartData.value = coCountChartData.value.map(item => item.value);
+        console.log('coCountChartData:', coCountChartData);
+    });
+    //获取悬浮颗拉物浓度超标累计
+    await spmCount().then(res => {
+        spmCountData.value = Object.keys(res.data.data).map(key => {
+            var [spmLevel, spmCount] = Object.entries(res.data.data[key])[0];
+            return {
+                name: level[key],
+                value: spmCount
+            };
+        });
+        console.log('spmCount:', spmCountData);
+        // 补全缺失的项
+        spmCountChartData.value = level.map(name => {
+            // 在原数组中查找是否有该项
+            const found = spmCountData.value.find(item => item.name === name);
+            // 如果找到则返回原项，否则补充一个新项
+            return found ? found : reactive({ name, value: 0 });
+        });
+        // 提取数据
+        spmCountChartData.value = spmCountChartData.value.map(item => item.value);
+        console.log('spmCountChartData:', spmCountChartData);
+    });
 }
 onMounted(async() => {
   await fetchData();
@@ -215,6 +287,9 @@ onMounted(async() => {
         setMap();
         setChart3();
         setChart4();
+        setChart5();
+        setChart6();
+        setChart7();
     });
   })
   
@@ -319,43 +394,6 @@ const setMap = () => {
     }
 }
 
-const setChart3 = () => {
-    const chart3 = echarts.init(document.getElementById('chart3'));
-    var option3 = {
-        title: {
-            text: '空气质量指数级别分布',
-            //标题居中
-            left: 'center',
-            style: {
-                fill: '#fff',
-                verticalAlign: 'top',
-            },
-            textStyle:{
-                color: 'white'
-            },
-            offset: [0, 0],
-
-        },
-        series: [
-            {
-                type: 'pie',
-                data: aqiCountChartData.value,
-                insideLabel: {
-                    show: true
-                },
-                roseType: false,
-                radius: ['30%', '60%'],
-                avoidLabelOverlap: false,
-                label:{
-                    align: 'center',
-                    fontSize: 8,
-                },
-            }
-        ]
-    }
-    chart3.setOption(option3);
-}
-
 const option1 = reactive({
     title: {
         text: '省会城市网格覆盖率',
@@ -432,6 +470,43 @@ const option2 = reactive({
         }
     ]
 })
+
+const setChart3 = () => {
+    const chart3 = echarts.init(document.getElementById('chart3'));
+    var option3 = {
+        title: {
+            text: '空气质量指数级别分布',
+            //标题居中
+            left: 'center',
+            style: {
+                fill: '#fff',
+                verticalAlign: 'top',
+            },
+            textStyle:{
+                color: 'white'
+            },
+            offset: [0, 0],
+
+        },
+        series: [
+            {
+                type: 'pie',
+                data: aqiCountChartData.value,
+                insideLabel: {
+                    show: true
+                },
+                roseType: false,
+                radius: ['30%', '60%'],
+                avoidLabelOverlap: false,
+                label:{
+                    align: 'center',
+                    fontSize: 8,
+                },
+            }
+        ]
+    }
+    chart3.setOption(option3);
+}
 
 const setChart4 = () => {
     const chart4 = echarts.init(document.getElementById('chart4'));
@@ -520,227 +595,232 @@ const setChart4 = () => {
     chart4.setOption(option4);
 }
 
-const option5 = {
-    title: {
-        text: '悬浮颗拉物(PM2.5)浓度超标累计',
-        style: {
-            fill: '#fff'
+const setChart5 = () => {
+    const chart5 = echarts.init(document.getElementById('chart5'));
+    const option5 = {
+        title: {
+            text: '悬浮颗拉物(PM2.5)浓度超标累计',
+            //标题居中
+            left: 'center',
+            textStyle: {
+                color: '#fff'
+            },
+            offset:[0, -28]
         },
-        offset:[0, -28]
-    },
-    grid: {
-        left: 60,
-        right: 10
-    },
-
-    xAxis: {
-        data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
-        axisLabel: {
-            show: true,
-            style: {
-                fill: '#fff',
-            }
-        },
-        axisTick: {
-            show: true,
-            style: {
-                fill: '#fff',
-            }
-        },
-        axisLine: {
-            show: true,
-            style: {
-                stroke: '#fff'
-            }
-        },
-        
-    },
-    yAxis: {
-        name: '销售额',
-        data: 'value',
-        axisLabel: {
-            show: true,
-            style: {
-                fill: '#fff',
-            }
-        },
-        axisTick: {
-            show: true,
-            style: {
-                fill: '#fff',
-            }
-        },
-        axisLine: {
-            show: true,
-            style: {
-                stroke: '#fff'
-            }
-        },
-        splitNumber: 4,
-        nameTextStyle: {
-            fill: '#fff',
-            fontSize: 10
+        grid: {
+            left: 60,
+            right: 10
         },
 
-    },
-    series: [
-        {
-            data: [1200, 2230, 1900, 2100, 3500, 4200, 3985],
-            type: 'bar',
-            gradient: {
-                color: ['#37a2da', '#67e0e3']
+        xAxis: {
+            data: ['一', '二', '三', '四', '五', '六'],
+            axisLabel: {
+                show: true,
+                color: '#fff',
+            },
+            axisTick: {
+                show: true,
+                color: '#fff',
+            },
+            axisLine: {
+                show: true,
+                style: {
+                    stroke: '#fff'
+                }
+            },
+            
+        },
+        yAxis: {
+            // name: '统计',
+            // data: 'value',
+            axisLabel: {
+                show: true,
+                color: '#fff',
+                formatter: '{value}'
+            },
+            axisTick: {
+                show: true,
+                color: '#fff',
+            },
+            axisLine: {
+                show: true,
+                style: {
+                    stroke: '#fff'
+                }
+            },
+            splitNumber: 4,
+            nameTextStyle: {
+                fill: '#fff',
+                fontSize: 10
+            },
+            min: 0,
+            max: 6,
+            interval: 1,
+        },
+        series: [
+            {
+                data: spmCountChartData.value,
+                type: 'bar',
+                gradient: {
+                    color: ['#37a2da', '#67e0e3']
+                }
             }
-        }
-    ]
+        ]
+    }
+    chart5.setOption(option5);
 }
 
-const option6 = {
-    title: {
-        text: '二氧化硫(SO2)浓度超标累计',
-        style: {
-            fill: '#fff'
+const setChart6 = () => {
+    const chart6 = echarts.init(document.getElementById('chart6'));
+    const option6 = {
+        title: {
+            text: '二氧化硫(SO2)浓度超标累计',
+            //标题居中
+            left: 'center',
+            textStyle: {
+                color: '#fff'
+            },
+            offset:[0, -28]
         },
-        offset:[0, -28]
-    },
-    grid: {
-        left: 60,
-        right: 10
-    },
-
-    xAxis: {
-        data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
-        axisLabel: {
-            show: true,
-            style: {
-                fill: '#fff',
-            }
-        },
-        axisTick: {
-            show: true,
-            style: {
-                fill: '#fff',
-            }
-        },
-        axisLine: {
-            show: true,
-            style: {
-                stroke: '#fff'
-            }
-        },
-        
-    },
-    yAxis: {
-        name: '销售额',
-        data: 'value',
-        axisLabel: {
-            show: true,
-            style: {
-                fill: '#fff',
-            }
-        },
-        axisTick: {
-            show: true,
-            style: {
-                fill: '#fff',
-            }
-        },
-        axisLine: {
-            show: true,
-            style: {
-                stroke: '#fff'
-            }
-        },
-        splitNumber: 4,
-        nameTextStyle: {
-            fill: '#fff',
-            fontSize: 10
+        grid: {
+            left: 60,
+            right: 10
         },
 
-    },
-    series: [
-        {
-            data: [1200, 2230, 1900, 2100, 3500, 4200, 3985],
-            type: 'bar',
-            gradient: {
-                color: ['#37a2da', '#67e0e3']
+        xAxis: {
+            data: ['一', '二', '三', '四', '五', '六'],
+            axisLabel: {
+                show: true,
+                color: '#fff',
+            },
+            axisTick: {
+                show: true,
+                color: '#fff',
+            },
+            axisLine: {
+                show: true,
+                style: {
+                    stroke: '#fff'
+                }
+            },
+            
+        },
+        yAxis: {
+            axisLabel: {
+                show: true,
+                color: '#fff',
+            },
+            axisTick: {
+                show: true,
+                color: '#fff',
+            },
+            axisLine: {
+                show: true,
+                style: {
+                    stroke: '#fff'
+                }
+            },
+            splitNumber: 4,
+            nameTextStyle: {
+                fill: '#fff',
+                fontSize: 10
+            },
+            min: 0,
+            max: 10,
+            interval: 2,
+        },
+        series: [
+            {
+                data: so2CountChartData.value,
+                type: 'bar',
+                gradient: {
+                    color: ['#37a2da', '#67e0e3']
+                }
             }
-        }
-    ]
+        ]
+    }
+    chart6.setOption(option6);
 }
 
-const option7 = {
-    title: {
-        text: '—氧化碳(CO)浓度超标累计',
-        style: {
-            fill: '#fff'
+const setChart7 = () => {
+    const chart7 = echarts.init(document.getElementById('chart7'));
+    const option7 = {
+        title: {
+            text: '—氧化碳(CO)浓度超标累计',
+            //标题居中
+            left: 'center',
+            textStyle: {
+                color: '#fff'
+            },
+            offset:[0, -28]
         },
-        offset:[0, -28]
-    },
-    grid: {
-        left: 60,
-        right: 10
-    },
-
-    xAxis: {
-        data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
-        axisLabel: {
-            show: true,
-            style: {
-                fill: '#fff',
-            }
-        },
-        axisTick: {
-            show: true,
-            style: {
-                fill: '#fff',
-            }
-        },
-        axisLine: {
-            show: true,
-            style: {
-                stroke: '#fff'
-            }
-        },
-        
-    },
-    yAxis: {
-        name: '销售额',
-        data: 'value',
-        axisLabel: {
-            show: true,
-            style: {
-                fill: '#fff',
-            }
-        },
-        axisTick: {
-            show: true,
-            style: {
-                fill: '#fff',
-            }
-        },
-        axisLine: {
-            show: true,
-            style: {
-                stroke: '#fff'
-            }
-        },
-        splitNumber: 4,
-        nameTextStyle: {
-            fill: '#fff',
-            fontSize: 10
+        grid: {
+            left: 60,
+            right: 10
         },
 
-    },
-    series: [
-        {
-            data: [1200, 2230, 1900, 2100, 3500, 4200, 3985],
-            type: 'bar',
-            gradient: {
-                color: ['#37a2da', '#67e0e3']
+        xAxis: {
+            data: ['一', '二', '三', '四', '五', '六'],
+            axisLabel: {
+                show: true,
+                color: '#fff',
+            },
+            axisTick: {
+                show: true,
+                style: {
+                    fill: '#fff',
+                }
+            },
+            axisLine: {
+                show: true,
+                style: {
+                    stroke: '#fff'
+                }
+            },
+            nameTextStyle: {
+                color: '#fff',
+                fontSize: 10
             }
-        }
-    ]
+            
+        },
+        yAxis: {
+            axisLabel: {
+                show: true,
+                color: '#fff',
+            },
+            axisTick: {
+                show: true,
+                color: '#fff',
+            },
+            axisLine: {
+                show: true,
+                style: {
+                    stroke: '#fff'
+                }
+            },
+            splitNumber: 4,
+            nameTextStyle: {
+                fill: '#fff',
+                fontSize: 10
+            },
+            min: 0,
+            max: 6,
+            interval: 1,
+        },
+        series: [
+            {
+                data: coCountChartData.value,
+                type: 'bar',
+                gradient: {
+                    color: ['#37a2da', '#67e0e3']
+                },
+            }
+        ]
+    }
+    chart7.setOption(option7);
 }
+
+
 
 </script>
 
